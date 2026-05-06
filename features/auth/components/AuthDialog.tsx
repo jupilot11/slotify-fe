@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import Modal from '@/components/ui/Modal'
+import Button from '@/components/ui/Button'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
 
@@ -16,6 +17,30 @@ interface AuthDialogProps {
 
 export default function AuthDialog({ isOpen, onClose, defaultTab = 'login' }: AuthDialogProps) {
   const [activeTab, setActiveTab] = useState<Tab>(defaultTab)
+  const [emailSent, setEmailSent] = useState(false)
+
+  if (emailSent) {
+    return (
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <div className="flex flex-col items-center text-center py-4 gap-4">
+          <div className="flex items-center justify-center w-14 h-14 rounded-full bg-indigo-50">
+            <svg className="w-7 h-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">Check your email</h2>
+            <p className="text-sm text-slate-500 mt-2 max-w-xs">
+              We&apos;ve sent a confirmation link to your email address. Please check your inbox to activate your account.
+            </p>
+          </div>
+          <Button className="w-full mt-2" size="lg" onClick={onClose}>
+            Got it
+          </Button>
+        </div>
+      </Modal>
+    )
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -90,7 +115,10 @@ export default function AuthDialog({ isOpen, onClose, defaultTab = 'login' }: Au
           </p>
         </>
       ) : (
-        <RegisterForm onSwitchToLogin={() => setActiveTab('login')} />
+        <RegisterForm
+          onSwitchToLogin={() => setActiveTab('login')}
+          onSuccess={() => setEmailSent(true)}
+        />
       )}
     </Modal>
   )
