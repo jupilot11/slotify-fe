@@ -74,15 +74,15 @@ const features = [
     ),
   },
   {
-    title: 'API-ready architecture',
-    description: 'Built to plug in a real backend. The service layer makes it seamless.',
+    title: 'Works on any device',
+    description: 'Your clients can book from their phone, tablet, or computer — no app needed.',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth={2}
-          d="M13 10V3L4 14h7v7l9-11h-7z"
+          d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
         />
       </svg>
     ),
@@ -91,7 +91,7 @@ const features = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Header */}
       <header className="border-b border-slate-100 sticky top-0 bg-white/90 backdrop-blur-sm z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -99,9 +99,6 @@ export default function LandingPage() {
           <nav className="hidden md:flex items-center gap-8 text-sm text-slate-600">
             <Link href="#features" className="hover:text-slate-900 transition-colors">
               Features
-            </Link>
-            <Link href="/jays-barbershop" className="hover:text-slate-900 transition-colors">
-              Demo
             </Link>
           </nav>
           <div className="flex items-center gap-3">
@@ -120,10 +117,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="py-24 sm:py-32 px-4 text-center">
         <div className="max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 text-sm font-medium px-4 py-1.5 rounded-full mb-8">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-pulse" />
-            Now in open beta
-          </div>
+
           <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight mb-6 leading-tight">
             Booking made{' '}
             <span className="text-indigo-600">effortless</span>
@@ -136,11 +130,7 @@ export default function LandingPage() {
             <Link href="/login">
               <Button size="lg">Start for free</Button>
             </Link>
-            <Link href="/jays-barbershop">
-              <Button size="lg" variant="outline">
-                See live demo
-              </Button>
-            </Link>
+
           </div>
           <p className="mt-6 text-sm text-slate-400">No credit card required</p>
         </div>
@@ -200,7 +190,7 @@ export default function LandingPage() {
           <Link href="/login">
             <Button
               size="lg"
-              className="bg-white text-indigo-600 hover:bg-indigo-50 focus:ring-white"
+              className="bg-red-700text-indigo-600 hover:bg-indigo-50 focus:ring-white"
             >
               Get started for free
             </Button>
@@ -208,21 +198,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 py-8 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-4">
-          <Logo />
-          <p className="text-sm text-slate-400">© 2026 Slotify. All rights reserved.</p>
-          <div className="flex gap-6 text-sm text-slate-400">
-            <Link href="/dashboard" className="hover:text-slate-600 transition-colors">
-              Dashboard
-            </Link>
-            <Link href="/jays-barbershop" className="hover:text-slate-600 transition-colors">
-              Demo
-            </Link>
-          </div>
-        </div>
-      </footer>
+
     </div>
   )
 }

@@ -1,49 +1,50 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import Logo from '@/components/layout/Logo'
-import LoginForm from '@/features/auth/components/LoginForm'
+import LoginPageClient from './LoginPageClient'
 
 export const metadata: Metadata = {
   title: 'Sign in – Slotify',
 }
 
+const ARC_SIZES = [480, 680, 880, 1080]
+
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <header className="h-16 flex items-center px-6">
-        <Logo />
-      </header>
+    <div className="min-h-screen">
+      <div className="absolute inset-0 overflow-hidden">
+        {ARC_SIZES.map((size, i) => (
+          <svg
+            key={i}
+            className="absolute opacity-20"
+            style={{
+              width: size,
+              height: size,
+              top: `calc(50% - ${size / 2}px)`,
+              left: `calc(50% - ${size / 2}px)`,
+            }}
+            fill="none"
+            viewBox={`0 0 ${size} ${size}`}
+          >
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={(size - 4) / 2}
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+          </svg>
+        ))}
+      </div>
 
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-sm">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-slate-900">Welcome back</h1>
-            <p className="text-slate-500 mt-2 text-sm">Sign in to your Slotify account</p>
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+          <div className="flex flex-col items-center gap-4 mb-6">
+            <Logo className="h-10" />
+            <h1 className="text-2xl font-bold text-slate-900">Sign in to your account</h1>
+            <p className="text-sm text-slate-500">Enter your email and password to continue.</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
-            <LoginForm />
-
-            <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-              <p className="text-sm text-slate-500">
-                Don&apos;t have an account?{' '}
-                <Link
-                  href="/login"
-                  className="text-indigo-600 font-medium hover:text-indigo-700"
-                >
-                  Sign up free
-                </Link>
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-6 text-center text-xs text-slate-400">
-            Demo: use{' '}
-            <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">
-              owner@slotify.com
-            </span>{' '}
-            with any password
-          </p>
+          <LoginPageClient />
         </div>
       </div>
     </div>

@@ -20,7 +20,35 @@
 }
 
 body {
-  background: var(--background);
+  background-image: url('/images/app_background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes overlay-show {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes content-show {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-overlay-show {
+  animation: overlay-show 180ms ease-out;
+}
+
+.animate-content-show {
+  animation: content-show 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }

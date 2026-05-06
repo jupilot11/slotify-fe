@@ -28,10 +28,10 @@ export default function Modal({ isOpen, onClose, title, children, className }: M
       aria-modal="true"
       role="dialog"
     >
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
+      <div className="animate-overlay-show absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
       <div
         className={cn(
-          'relative bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto',
+          'animate-content-show relative bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto',
           className
         )}
       >
