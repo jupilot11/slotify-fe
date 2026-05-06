@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Slotify — Smart Appointment Booking
+
+A multi-tenant appointment booking platform for service-based businesses (barbershops, salons, clinics, etc.). Customers can book appointments 24/7 via a public-facing page; business owners manage everything through a dashboard.
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Demo credentials:** `owner@slotify.com` (any password)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech Stack
 
-## Learn More
+| Layer | Tech |
+|---|---|
+| Framework | Next.js (App Router) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS 4 |
+| Forms | React Hook Form + Zod |
+| State | React built-ins (no external store) |
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+app/
+  /                    # Landing page
+  /login               # Auth page
+  /dashboard           # Owner dashboard (stats, bookings, services, settings)
+  /[businessSlug]      # Public booking page (e.g. /jays-barbershop)
+  /admin               # Admin panel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+features/              # Feature-scoped UI components
+services/              # Data access layer (all mock)
+components/            # Reusable UI primitives
+hooks/                 # Shared React hooks
+types/                 # TypeScript interfaces
+mock/                  # In-memory mock data
+constants/             # App-wide constants
+lib/                   # Utility functions
+```
 
-## Deploy on Vercel
+## Services (Current: Mock)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+All data is served from in-memory mock stores with simulated network delays. The service layer is abstracted so these can be swapped for real API calls without touching the UI.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Service | Responsibilities |
+|---|---|
+| `auth.service.ts` | Login, get current user |
+| `business.service.ts` | Get/update business by slug or ID |
+| `catalog.service.ts` | CRUD for business services |
+| `booking.service.ts` | Bookings, status updates, available time slots |
+
+**Mock users:**
+
+| Email | Role |
+|---|---|
+| `owner@slotify.com` | owner |
+| `staff@slotify.com` | staff |
+| `admin@slotify.com` | admin |
+
+**Mock businesses:** Jay's Barbershop, Glow Salon, City Dental Clinic
+
+## Data Models
+
+`User` · `Business` · `Service` · `Booking` · `TimeSlot`
+
+All models carry a `businessId` for multi-tenant support.
+
+## Connecting a Real Backend
+
+Replace the mock implementations in `services/` with real HTTP calls. No other files need to change — the service layer is the only integration boundary.

@@ -1,0 +1,20 @@
+import type { User, ApiResponse } from '@/types'
+import { mockUsers, mockCurrentUser } from '@/mock/users'
+
+const delay = (ms = 500) => new Promise((resolve) => setTimeout(resolve, ms))
+
+export async function login(email: string, _password: string): Promise<ApiResponse<User>> {
+  await delay()
+  const user = mockUsers.find((u) => u.email === email)
+  if (!user) return { data: null, error: 'Invalid email or password' }
+  return { data: user, error: null }
+}
+
+export async function logout(): Promise<void> {
+  await delay(200)
+}
+
+export async function getCurrentUser(): Promise<ApiResponse<User>> {
+  await delay(200)
+  return { data: mockCurrentUser, error: null }
+}
