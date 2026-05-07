@@ -26,6 +26,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             'placeholder:text-slate-400 bg-white',
             'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent',
             'disabled:bg-slate-50 disabled:cursor-not-allowed',
+            '[&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_white] [&:-webkit-autofill]:[-webkit-text-fill-color:theme(colors.slate.900)]',
             error && 'border-red-500 focus:ring-red-500',
             className
           )}

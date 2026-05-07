@@ -16,23 +16,27 @@ export interface RegistrationResponse {
   }
 }
 
-// ── Error classification ─────────────────────────────────────────────────────
-
-export type AuthErrorCode =
-  | 'EMAIL_ALREADY_EXISTS'
-  | 'INVALID_EMAIL'
-  | 'RATE_LIMITED'
-  | 'NETWORK_ERROR'
-  | 'SERVER_ERROR'
-  | 'TIMEOUT'
-  | 'VALIDATION_ERROR'
-  | 'UNKNOWN'
+// ── Error ────────────────────────────────────────────────────────────────────
 
 export interface AuthError {
-  code: AuthErrorCode
+  success?: boolean
   message: string
+}
+
+// ── Email Verification ───────────────────────────────────────────────────────
+
+export interface EmailVerificationRequest {
+  email: string
+}
+
+export interface EmailVerificationResponse {
+  success: boolean,
+  message?: string,
+  password_set?: boolean
+
 }
 
 // ── State ────────────────────────────────────────────────────────────────────
 
 export type RegistrationStatus = 'idle' | 'loading' | 'success' | 'error'
+export type EmailVerificationStatus = 'idle' | 'loading' | 'success' | 'error'

@@ -18,7 +18,16 @@ export async function registerUser(payload: RegistrationRequest): Promise<Regist
 
   const { data, error } = await Promise.race([invoke, timeout])
 
-  if (error) throw error
+  if (error) {
+
+    const ctx = (error as unknown as { context?: unknown }).context
+    if (ctx instanceof Response) {
+      const body = await ctx.json().catch(() => null)
+      const msg = body?.error ?? body?.message
+      if (typeof msg === 'string' && msg) throw new Error(msg)
+    }
+    throw error
+  }
   if (!data) throw new Error('Empty response from registration service')
 
   return data
