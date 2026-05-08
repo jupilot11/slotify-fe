@@ -13,47 +13,44 @@ interface AuthDialogProps {
   isOpen: boolean
   onClose: () => void
   defaultTab?: Tab
+  inline?: boolean
 }
 
-export default function AuthDialog({ isOpen, onClose, defaultTab = 'login' }: AuthDialogProps) {
+export default function AuthDialog({ isOpen, onClose, defaultTab = 'login', inline = false }: AuthDialogProps) {
   const [activeTab, setActiveTab] = useState<Tab>(defaultTab)
   const [emailSent, setEmailSent] = useState(false)
 
-  if (emailSent) {
-    return (
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="flex flex-col items-center text-center py-6 gap-5">
-          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 ring-1 ring-indigo-100">
-            <svg
-              className="w-8 h-8 text-indigo-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-              />
-            </svg>
-          </div>
-          <div className="space-y-1.5">
-            <h2 className="text-xl font-bold text-slate-900">Check your email</h2>
-            <p className="text-sm text-slate-500 max-w-xs leading-relaxed">
-              We&apos;ve sent a confirmation link to your inbox. Click it to activate your account.
-            </p>
-          </div>
-          <Button className="w-full mt-1" size="lg" onClick={onClose}>
-            Got it
-          </Button>
-        </div>
-      </Modal>
-    )
-  }
+  const emailSentContent = (
+    <div className="flex flex-col items-center text-center py-6 gap-5">
+      <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 shadow-sm ring-1 ring-indigo-100">
+        <svg
+          className="w-8 h-8 text-indigo-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={1.5}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+          />
+        </svg>
+      </div>
+      <div className="space-y-1.5">
+        <h2 className="text-xl font-bold text-slate-900">Check your email</h2>
+        <p className="text-sm text-slate-500 max-w-xs leading-relaxed">
+          We&apos;ve sent a confirmation link to your inbox. Click it to activate your account.
+        </p>
+      </div>
+      <Button className="w-full mt-1" size="lg" onClick={onClose}>
+        Got it
+      </Button>
+    </div>
+  )
 
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+  const mainContent = (
+    <>
       <div className="flex items-start justify-between">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2 mb-2">
@@ -141,6 +138,16 @@ export default function AuthDialog({ isOpen, onClose, defaultTab = 'login' }: Au
           onSuccess={() => setEmailSent(true)}
         />
       )}
-    </Modal>
+    </>
   )
+
+  if (inline) {
+    return emailSent ? emailSentContent : mainContent
+  }
+
+  if (emailSent) {
+    return <Modal isOpen={isOpen} onClose={onClose}>{emailSentContent}</Modal>
+  }
+
+  return <Modal isOpen={isOpen} onClose={onClose}>{mainContent}</Modal>
 }

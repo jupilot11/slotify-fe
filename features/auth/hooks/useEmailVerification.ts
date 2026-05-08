@@ -11,6 +11,9 @@ export interface UseEmailVerificationReturn {
   status: EmailVerificationStatus
   error: AuthError | null
   passwordRequired: boolean
+  showPasswordSetupDialog: boolean
+  pendingEmail: string | null
+  dismissPasswordSetupDialog: () => void
   submit: (email: string) => Promise<void>
   login: (email: string, password: string) => Promise<void>
   reset: () => void
@@ -20,6 +23,8 @@ export function useEmailVerification(): UseEmailVerificationReturn {
   const [status, setStatus] = useState<EmailVerificationStatus>('idle')
   const [error, setError] = useState<AuthError | null>(null)
   const [passwordRequired, setPasswordRequired] = useState(false)
+  const [showPasswordSetupDialog, setShowPasswordSetupDialog] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null)
 
   // Ref-based guard prevents double-submission from fast clicks or StrictMode double-invoke.
   const isInflightRef = useRef(false)
@@ -40,9 +45,15 @@ export function useEmailVerification(): UseEmailVerificationReturn {
 
     try {
       const data = await verifyEmail({ email: parsed.data.email.trim().toLowerCase() })
-      if (!data.password_set) {
-        toast.error('Failed to resend', { description: data.message })
+      if (!data.email_verified) {
+        setError({ message: data.message ?? 'Failed to resend verification email' })
         return setStatus('error')
+      }
+      if (!data.password_set) {
+        setStatus('idle')
+        setPendingEmail(parsed.data.email.trim().toLowerCase())
+        setShowPasswordSetupDialog(true)
+        return
       }
       setPasswordRequired(true)
       setStatus('idle')
@@ -60,11 +71,15 @@ export function useEmailVerification(): UseEmailVerificationReturn {
     toast.info('Login API not yet available.')
   }
 
+  const dismissPasswordSetupDialog = () => setShowPasswordSetupDialog(false)
+
   const reset = () => {
     setStatus('idle')
     setError(null)
     setPasswordRequired(false)
+    setShowPasswordSetupDialog(false)
+    setPendingEmail(null)
   }
 
-  return { status, error, passwordRequired, submit, login, reset }
+  return { status, error, passwordRequired, showPasswordSetupDialog, pendingEmail, dismissPasswordSetupDialog, submit, login, reset }
 }
