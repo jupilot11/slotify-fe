@@ -64,6 +64,33 @@ export interface SetPasswordResponse {
 
 // ── State ────────────────────────────────────────────────────────────────────
 
+// ── Login ────────────────────────────────────────────────────────────────────
+
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+export interface LoginResponse {
+  message: string
+  user: {
+    id: string
+    email: string
+    created_at: string
+    last_sign_in_at: string
+  }
+  session: {
+    access_token: string
+    refresh_token: string
+    expires_at: number
+    token_type: string
+  }
+  profile: Record<string, unknown>
+  profile_warning?: string
+}
+
+// ── State ────────────────────────────────────────────────────────────────────
+
 export type RegistrationStatus = 'idle' | 'loading' | 'success' | 'error'
 export type EmailVerificationStatus = 'idle' | 'loading' | 'success' | 'error'
 export type SetPasswordStatus = 'idle' | 'loading' | 'success' | 'error'

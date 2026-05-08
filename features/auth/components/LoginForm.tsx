@@ -8,6 +8,7 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { useEmailVerification } from '@/features/auth/hooks/useEmailVerification'
 import PasswordSetupDialog from '@/features/auth/components/PasswordSetupDialog'
+import EyeIcon from '@/components/ui/EyeIcon'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -19,6 +20,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 export default function LoginForm() {
   const { status, error, passwordRequired, showPasswordSetupDialog, pendingEmail, dismissPasswordSetupDialog, submit, login, reset } = useEmailVerification()
   const [displayError, setDisplayError] = useState<typeof error>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     setDisplayError(error)
@@ -108,14 +110,25 @@ export default function LoginForm() {
               : 'max-h-0 opacity-0 -translate-y-2 overflow-hidden',
           ].join(' ')}
         >
-          <Input
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            autoComplete="current-password"
-            error={errors.password?.message}
-            {...register('password')}
-          />
+          <div className='relative'>
+            <Input
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              error={errors.password?.message}
+              {...register('password')}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3 top-[34px] text-slate-400 hover:text-slate-600 transition-colors"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              <EyeIcon open={showPassword} />
+            </button>
+          </div>
+
         </div>
         <div
           className={[
