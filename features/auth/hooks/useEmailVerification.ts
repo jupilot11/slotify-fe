@@ -84,13 +84,11 @@ export function useEmailVerification(): UseEmailVerificationReturn {
         if (userProfile.roles.includes('admin')) {
           toast.success('Login successful! Redirecting to admin dashboard...')
           reset()
-
           return
         }
         if (userProfile.roles.includes('customer')) {
           router.push('/dashboard')
           reset()
-
           return
         }
       }
