@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import Avatar from '@/components/ui/Avatar'
+import { useUser } from '@/hooks/useUser'
 import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
 import { logoutUser } from '@/features/auth/services/logout.service'
@@ -77,14 +78,21 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const { user } = useUser()
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const displayName =
+    (user?.user_metadata?.full_name as string | undefined) ??
+    user?.email?.split('@')[0] ??
+    '—'
+  const displayEmail = user?.email ?? ''
 
   async function handleLogout() {
     setIsLoggingOut(true)
     try {
       await logoutUser()
-      router.push('/')
+      router.push('/login')
     } catch {
       setIsLoggingOut(false)
       setShowLogoutDialog(false)
@@ -123,10 +131,10 @@ export default function Sidebar() {
 
         <div className="border-t border-slate-100 p-4 space-y-1">
           <div className="flex items-center gap-3 px-2 py-2">
-            <Avatar name="Alex Johnson" size="sm" />
+            <Avatar name={displayName} size="sm" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-900 truncate">Alex Johnson</p>
-              <p className="text-xs text-slate-500 truncate">owner@slotify.com</p>
+              <p className="text-sm font-medium text-slate-900 truncate">{displayName}</p>
+              <p className="text-xs text-slate-500 truncate">{displayEmail}</p>
             </div>
           </div>
 

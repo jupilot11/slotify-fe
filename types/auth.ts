@@ -62,8 +62,6 @@ export interface SetPasswordResponse {
   code?: string
 }
 
-// ── State ────────────────────────────────────────────────────────────────────
-
 // ── Login ────────────────────────────────────────────────────────────────────
 
 export interface LoginRequest {

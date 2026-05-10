@@ -1,16 +1,9 @@
-export type UserRole = 'owner' | 'staff' | 'admin'
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed'
 export type ServiceStatus = 'active' | 'inactive'
 export type BusinessCategory = 'barbershop' | 'clinic' | 'salon' | 'other'
 
-export interface User {
-  id: string
-  email: string
-  name: string
-  role: UserRole
-  avatarUrl?: string
-  businessId?: string
-}
+// Auth-specific types live in @/types/auth — import from there when you need
+// UserProfile, LoginRequest, LoginResponse, etc.
 
 export interface WorkingHours {
   [day: string]: { open: string; close: string; closed: boolean }
