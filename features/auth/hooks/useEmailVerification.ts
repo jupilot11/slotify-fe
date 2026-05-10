@@ -78,9 +78,24 @@ export function useEmailVerification(): UseEmailVerificationReturn {
     setError(null)
 
     try {
-      await loginUser({ email, password })
-      setStatus('success')
-      router.push('/dashboard')
+      const response = await loginUser({ email, password })
+      const userProfile = response.profile;
+      if (userProfile != null) {
+        if (userProfile.roles.includes('admin')) {
+          toast.success('Login successful! Redirecting to admin dashboard...')
+          reset()
+
+          return
+        }
+        if (userProfile.roles.includes('customer')) {
+          router.push('/dashboard')
+          reset()
+
+          return
+        }
+      }
+      setError({ message: 'Login successful, but failed to retrieve user profile' })
+      setStatus('error')
     } catch (err) {
       const mapped = mapAuthError(err)
       setError(mapped)

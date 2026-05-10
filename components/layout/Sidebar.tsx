@@ -1,10 +1,13 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import Logo from './Logo'
 import Avatar from '@/components/ui/Avatar'
+import Modal from '@/components/ui/Modal'
+import Button from '@/components/ui/Button'
+import { logoutUser } from '@/features/auth/services/logout.service'
 
 const navItems = [
   {
@@ -73,49 +76,98 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  async function handleLogout() {
+    setIsLoggingOut(true)
+    try {
+      await logoutUser()
+      router.push('/')
+    } catch {
+      setIsLoggingOut(false)
+      setShowLogoutDialog(false)
+    }
+  }
 
   return (
-    <aside className="flex h-full w-64 flex-col bg-white border-r border-slate-200 shrink-0">
-      <div className="flex h-16 items-center px-6 border-b border-slate-100">
-        <Logo />
-      </div>
+    <>
+      <aside className="flex h-full w-64 flex-col bg-white border-r border-slate-200 shrink-0">
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <ul className="space-y-1">
+            {navItems.map((item) => {
+              const isActive =
+                item.href === '/dashboard'
+                  ? pathname === '/dashboard'
+                  : pathname.startsWith(item.href)
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                      isActive
+                        ? 'bg-indigo-50 text-indigo-700'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    )}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </nav>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <ul className="space-y-1">
-          {navItems.map((item) => {
-            const isActive =
-              item.href === '/dashboard'
-                ? pathname === '/dashboard'
-                : pathname.startsWith(item.href)
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-indigo-50 text-indigo-700'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  )}
-                >
-                  {item.icon}
-                  {item.label}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </nav>
-
-      <div className="border-t border-slate-100 p-4">
-        <div className="flex items-center gap-3 px-2">
-          <Avatar name="Alex Johnson" size="sm" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-900 truncate">Alex Johnson</p>
-            <p className="text-xs text-slate-500 truncate">owner@slotify.com</p>
+        <div className="border-t border-slate-100 p-4 space-y-1">
+          <div className="flex items-center gap-3 px-2 py-2">
+            <Avatar name="Alex Johnson" size="sm" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-slate-900 truncate">Alex Johnson</p>
+              <p className="text-xs text-slate-500 truncate">owner@slotify.com</p>
+            </div>
           </div>
+
+          <button
+            onClick={() => setShowLogoutDialog(true)}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            Log out
+          </button>
         </div>
-      </div>
-    </aside>
+      </aside>
+
+      <Modal
+        isOpen={showLogoutDialog}
+        onClose={() => !isLoggingOut && setShowLogoutDialog(false)}
+        title="Log out"
+      >
+        <p className="text-sm text-slate-600 mb-6">
+          Are you sure you want to log out? You will need to sign in again to access your dashboard.
+        </p>
+        <div className="flex justify-end gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setShowLogoutDialog(false)}
+            disabled={isLoggingOut}
+          >
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleLogout} disabled={isLoggingOut}>
+            {isLoggingOut ? 'Logging out…' : 'Log out'}
+          </Button>
+        </div>
+      </Modal>
+    </>
   )
 }
