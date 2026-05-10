@@ -1,11 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
+import { login } from '@/services/auth.service'
+import { useAuth } from '@/contexts/auth.context'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -16,6 +19,8 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginForm() {
   const [serverError, setServerError] = useState<string | null>(null)
+  const { setUser } = useAuth()
+  const router = useRouter()
 
   const {
     register,
@@ -28,13 +33,13 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     setServerError(null)
     try {
-      const { login } = await import('@/services/auth.service')
       const result = await login(data.email, data.password)
-      if (result.error) {
-        setServerError(result.error)
+      if (result.error || !result.data) {
+        setServerError(result.error ?? 'Login failed')
         return
       }
-      window.location.href = '/dashboard'
+      setUser(result.data)
+      router.push('/dashboard')
     } catch {
       setServerError('Something went wrong. Please try again.')
     }

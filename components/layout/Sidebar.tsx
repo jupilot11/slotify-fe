@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import Logo from './Logo'
 import Avatar from '@/components/ui/Avatar'
+import { useAuth } from '@/contexts/auth.context'
 
 const navItems = [
   {
@@ -73,6 +74,7 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { user, logout } = useAuth()
 
   return (
     <aside className="flex h-full w-64 flex-col bg-white border-r border-slate-200 shrink-0">
@@ -107,14 +109,30 @@ export default function Sidebar() {
         </ul>
       </nav>
 
-      <div className="border-t border-slate-100 p-4">
+      <div className="border-t border-slate-100 p-4 space-y-3">
         <div className="flex items-center gap-3 px-2">
-          <Avatar name="Alex Johnson" size="sm" />
+          <Avatar name={user?.full_name ?? ''} size="sm" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-900 truncate">Alex Johnson</p>
-            <p className="text-xs text-slate-500 truncate">owner@slotify.com</p>
+            <p className="text-sm font-medium text-slate-900 truncate">
+              {user?.full_name ?? '—'}
+            </p>
+            <p className="text-xs text-slate-500 truncate">{user?.email ?? ''}</p>
           </div>
         </div>
+        <button
+          onClick={logout}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600"
+        >
+          <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
+          Sign out
+        </button>
       </div>
     </aside>
   )

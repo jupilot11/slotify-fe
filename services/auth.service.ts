@@ -1,20 +1,32 @@
 import type { User, ApiResponse } from '@/types'
-import { mockUsers, mockCurrentUser } from '@/mock/users'
 
-const delay = (ms = 500) => new Promise((resolve) => setTimeout(resolve, ms))
+export async function login(email: string, password: string): Promise<ApiResponse<User>> {
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
 
-export async function login(email: string, _password: string): Promise<ApiResponse<User>> {
-  await delay()
-  const user = mockUsers.find((u) => u.email === email)
-  if (!user) return { data: null, error: 'Invalid email or password' }
-  return { data: user, error: null }
+  const data = await res.json()
+
+  if (!res.ok) {
+    return { data: null, error: data.error ?? 'Login failed' }
+  }
+
+  return { data: data.profile as User, error: null }
 }
 
 export async function logout(): Promise<void> {
-  await delay(200)
+  await fetch('/api/auth/logout', { method: 'POST' })
 }
 
 export async function getCurrentUser(): Promise<ApiResponse<User>> {
-  await delay(200)
-  return { data: mockCurrentUser, error: null }
+  const res = await fetch('/api/auth/me')
+
+  if (!res.ok) {
+    return { data: null, error: 'Not authenticated' }
+  }
+
+  const data = await res.json()
+  return { data: data.profile as User, error: null }
 }
