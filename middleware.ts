@@ -1,65 +1,71 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
 
-/** Decode a JWT payload without signature verification (safe for expiry checks only) */
-function getTokenExpiry(token: string): number {
-  try {
-    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString())
-    return typeof payload.exp === 'number' ? payload.exp : 0
-  } catch {
-    return 0
-  }
-}
+/**
+ * Auth middleware using @supabase/ssr.
+ *
+ * Responsibilities:
+ *  1. Refresh the Supabase session cookie on every request so it never
+ *     silently expires mid-session.
+ *  2. Redirect unauthenticated users away from /dashboard.
+ *  3. Redirect authenticated users away from /login.
+ *
+ * Important: keep the createServerClient call and supabase.auth.getUser()
+ * call consecutive — inserting logic between them can cause subtle
+ * session-refresh bugs (per Supabase docs).
+ */
+export async function middleware(request: NextRequest) {
+  // Start with a plain "pass-through" response. The Supabase client may
+  // replace this below when it needs to write refreshed session cookies.
+  let response = NextResponse.next({ request })
 
-export function middleware(request: NextRequest) {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          // Forward the updated cookies onto both the request (for downstream
+          // middleware) and the response (to be sent back to the browser).
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          response = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          )
+        },
+      },
+    },
+  )
+
+  // getUser() validates the JWT with Supabase servers — do not use
+  // getSession() here as it only reads from the cookie without verifying.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   const { pathname } = request.nextUrl
-  const accessToken = request.cookies.get('access_token')?.value
-  const refreshToken = request.cookies.get('refresh_token')?.value
 
-  const isProtected = pathname.startsWith('/dashboard')
-  const isAuthPage = pathname === '/login'
-
-  // No access token at all
-  if (!accessToken) {
-    if (isProtected) {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
-    return NextResponse.next()
+  if (!user && pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Access token exists — check if it's expired
-  const exp = getTokenExpiry(accessToken)
-  const isExpired = exp < Math.floor(Date.now() / 1000)
-
-  if (isExpired) {
-    if (!refreshToken) {
-      // No way to refresh — clear stale cookies and redirect to login
-      if (isProtected) {
-        const response = NextResponse.redirect(new URL('/login', request.url))
-        response.cookies.delete('access_token')
-        response.cookies.delete('refresh_token')
-        response.cookies.delete('user_profile')
-        return response
-      }
-      return NextResponse.next()
-    }
-
-    // Refresh token available — hand off to the refresh route which will
-    // fetch a new access token and redirect back to the original destination
-    if (isProtected) {
-      const refreshUrl = new URL('/api/auth/refresh', request.url)
-      refreshUrl.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(refreshUrl)
-    }
-  }
-
-  // Valid, non-expired token — bounce authenticated users away from login
-  if (isAuthPage) {
+  if (user && pathname === '/login') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  return NextResponse.next()
+  return response
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'],
+  matcher: [
+    /*
+     * Match /dashboard and all its sub-routes, plus /login.
+     * Exclude Next.js internals and static files.
+     */
+    '/dashboard/:path*',
+    '/login',
+  ],
 }

@@ -1,32 +1,11 @@
-import type { User, ApiResponse } from '@/types'
+// Auth logic lives in features/auth/services/.
+// This file is kept for backwards compatibility but is no longer the
+// canonical auth entry-point.
+//
+// Use:
+//   loginUser  → @/features/auth/services/login.service
+//   logoutUser → @/features/auth/services/logout.service
+//   useUser    → @/hooks/useUser
 
-export async function login(email: string, password: string): Promise<ApiResponse<User>> {
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  })
-
-  const data = await res.json()
-
-  if (!res.ok) {
-    return { data: null, error: data.error ?? 'Login failed' }
-  }
-
-  return { data: data.profile as User, error: null }
-}
-
-export async function logout(): Promise<void> {
-  await fetch('/api/auth/logout', { method: 'POST' })
-}
-
-export async function getCurrentUser(): Promise<ApiResponse<User>> {
-  const res = await fetch('/api/auth/me')
-
-  if (!res.ok) {
-    return { data: null, error: 'Not authenticated' }
-  }
-
-  const data = await res.json()
-  return { data: data.profile as User, error: null }
-}
+export { loginUser } from '@/features/auth/services/login.service'
+export { logoutUser } from '@/features/auth/services/logout.service'

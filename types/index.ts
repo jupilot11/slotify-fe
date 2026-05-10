@@ -2,26 +2,8 @@ export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed'
 export type ServiceStatus = 'active' | 'inactive'
 export type BusinessCategory = 'barbershop' | 'clinic' | 'salon' | 'other'
 
-/** Shape mirrors the `profile` object returned by the backend login/me endpoints */
-export interface User {
-  id: string
-  email: string
-  full_name: string
-  roles: string[]
-  contact_number?: string | null
-  email_verified: boolean
-  password_set: boolean
-  created_at: string
-  updated_at: string
-}
-
-/** Raw session payload returned by the backend */
-export interface Session {
-  access_token: string
-  refresh_token: string
-  expires_at: number
-  token_type: string
-}
+// Auth-specific types live in @/types/auth — import from there when you need
+// UserProfile, LoginRequest, LoginResponse, etc.
 
 export interface WorkingHours {
   [day: string]: { open: string; close: string; closed: boolean }

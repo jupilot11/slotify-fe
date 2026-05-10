@@ -7,8 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-import { login } from '@/services/auth.service'
-import { useAuth } from '@/contexts/auth.context'
+import { loginUser } from '@/features/auth/services/login.service'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -19,29 +18,33 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginForm() {
   const [serverError, setServerError] = useState<string | null>(null)
-  const { setUser } = useAuth()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   })
 
   const onSubmit = async (data: LoginFormData) => {
     setServerError(null)
+    setIsSubmitting(true)
     try {
-      const result = await login(data.email, data.password)
-      if (result.error || !result.data) {
-        setServerError(result.error ?? 'Login failed')
-        return
+      const response = await loginUser({ email: data.email, password: data.password })
+      const profile = response.profile
+
+      if (profile?.roles.includes('admin')) {
+        router.push('/admin')
+      } else {
+        router.push('/dashboard')
       }
-      setUser(result.data)
-      router.push('/dashboard')
-    } catch {
-      setServerError('Something went wrong. Please try again.')
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
