@@ -10,7 +10,7 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
+# testingPlog
 /coverage
 
 # next.js
@@ -44,3 +44,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vscode
+.vscode/
+
+# supabase local temp
+supabase/.temp/
+supabase/.branches/
