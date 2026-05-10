@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Logo from './Logo'
 import Avatar from '@/components/ui/Avatar'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 interface UserInfo {
   name: string
@@ -12,8 +12,10 @@ interface UserInfo {
 
 export default function DashboardNavbar() {
   const [user, setUser] = useState<UserInfo | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user: authUser } }) => {
       if (authUser) {
         setUser({
@@ -25,10 +27,11 @@ export default function DashboardNavbar() {
           email: authUser.email ?? '',
         })
       }
+      setIsLoading(false)
     })
   }, [])
 
-  const displayName = user?.name ?? 'User'
+  const displayName = user?.name ?? ''
   const firstName = displayName.split(' ')[0]
   const username = user?.email?.split('@')[0] ?? ''
 
@@ -38,9 +41,13 @@ export default function DashboardNavbar() {
 
       <div className="h-6 w-px bg-slate-200" />
 
-      <p className="flex-1 text-sm font-medium text-slate-700">
-        Welcome back, {firstName} 👋
-      </p>
+      <div className="flex-1 text-sm font-medium text-slate-700">
+        {isLoading ? (
+          <div className="h-4 w-48 animate-pulse rounded bg-slate-200" />
+        ) : (
+          <>Welcome back, {firstName} 👋</>
+        )}
+      </div>
 
       <div className="flex items-center gap-1">
         <button
@@ -73,16 +80,26 @@ export default function DashboardNavbar() {
 
         <div className="mx-2 h-6 w-px bg-slate-200" />
 
-        <button className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-slate-50">
-          <Avatar name={displayName} size="sm" />
-          <div className="text-left">
-            <p className="text-sm font-semibold leading-tight text-slate-900">{displayName}</p>
-            <p className="text-xs leading-tight text-slate-500">{username}</p>
+        {isLoading ? (
+          <div className="flex items-center gap-2.5 px-2 py-1.5">
+            <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
+            <div className="space-y-1.5">
+              <div className="h-3 w-24 animate-pulse rounded bg-slate-200" />
+              <div className="h-2.5 w-16 animate-pulse rounded bg-slate-200" />
+            </div>
           </div>
-          <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-          </svg>
-        </button>
+        ) : (
+          <button className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-slate-50">
+            <Avatar name={displayName} size="sm" />
+            <div className="text-left">
+              <p className="text-sm font-semibold leading-tight text-slate-900">{displayName}</p>
+              <p className="text-xs leading-tight text-slate-500">{username}</p>
+            </div>
+            <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+            </svg>
+          </button>
+        )}
       </div>
     </header>
   )
