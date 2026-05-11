@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 /**
- * Auth middleware using @supabase/ssr.
+ * Auth proxy using @supabase/ssr.
  *
  * Responsibilities:
  *  1. Refresh the Supabase session cookie on every request so it never
@@ -14,7 +14,7 @@ import { NextResponse, type NextRequest } from 'next/server'
  * call consecutive — inserting logic between them can cause subtle
  * session-refresh bugs (per Supabase docs).
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Start with a plain "pass-through" response. The Supabase client may
   // replace this below when it needs to write refreshed session cookies.
   let response = NextResponse.next({ request })
@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           // Forward the updated cookies onto both the request (for downstream
-          // middleware) and the response (to be sent back to the browser).
+          // proxy) and the response (to be sent back to the browser).
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           response = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>

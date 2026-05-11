@@ -92,10 +92,8 @@ export default function Sidebar() {
     setIsLoggingOut(true)
     try {
       await logoutUser()
+    } finally {
       router.push('/login')
-    } catch {
-      setIsLoggingOut(false)
-      setShowLogoutDialog(false)
     }
   }
 

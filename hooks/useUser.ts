@@ -23,11 +23,11 @@ export function useUser(): UseUserReturn {
   useEffect(() => {
     const supabase = createClient()
 
-    // Initial fetch
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user)
-      setIsLoading(false)
-    })
+    // Initial fetch — treat any error (e.g. invalid refresh token) as signed-out
+    supabase.auth.getUser()
+      .then(({ data }) => { setUser(data.user) })
+      .catch(() => { setUser(null) })
+      .finally(() => { setIsLoading(false) })
 
     // Keep in sync with auth events (login, logout, token refresh)
     const {
