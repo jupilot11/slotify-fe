@@ -4,7 +4,11 @@ import Logo from './Logo'
 import Avatar from '@/components/ui/Avatar'
 import { useUser } from '@/hooks/useUser'
 
-export default function DashboardNavbar() {
+interface DashboardNavbarProps {
+  onMenuClick?: () => void
+}
+
+export default function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
   const { user, isLoading } = useUser()
 
   const displayName =
@@ -16,18 +20,31 @@ export default function DashboardNavbar() {
   const username = user?.email?.split('@')[0] ?? ''
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-4 border-b border-slate-200 bg-white px-6">
+    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 sm:px-6">
+      {/* Mobile hamburger */}
+      <button
+        onClick={onMenuClick}
+        aria-label="Open sidebar"
+        className="lg:hidden flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors shrink-0"
+      >
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+
       <Logo />
 
-      <div className="h-6 w-px bg-slate-200" />
+      <div className="hidden sm:block h-6 w-px bg-slate-200 mx-1" />
 
-      <div className="flex-1 text-sm font-medium text-slate-700">
+      <div className="hidden sm:block flex-1 text-sm font-medium text-slate-600">
         {isLoading ? (
-          <div className="h-4 w-48 animate-pulse rounded bg-slate-200" />
+          <div className="h-4 w-44 animate-pulse rounded bg-slate-200" />
         ) : (
-          <>Welcome back, {firstName} 👋</>
+          <>Welcome back, <span className="text-slate-900 font-semibold">{firstName}</span> 👋</>
         )}
       </div>
+
+      <div className="flex-1 sm:flex-none" />
 
       <div className="flex items-center gap-1">
         <button
@@ -58,12 +75,12 @@ export default function DashboardNavbar() {
           </svg>
         </button>
 
-        <div className="mx-2 h-6 w-px bg-slate-200" />
+        <div className="mx-1.5 h-6 w-px bg-slate-200" />
 
         {isLoading ? (
           <div className="flex items-center gap-2.5 px-2 py-1.5">
-            <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
-            <div className="space-y-1.5">
+            <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200 shrink-0" />
+            <div className="hidden sm:block space-y-1.5">
               <div className="h-3 w-24 animate-pulse rounded bg-slate-200" />
               <div className="h-2.5 w-16 animate-pulse rounded bg-slate-200" />
             </div>
@@ -71,11 +88,11 @@ export default function DashboardNavbar() {
         ) : (
           <button className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-slate-50">
             <Avatar name={displayName} size="sm" />
-            <div className="text-left">
+            <div className="hidden sm:block text-left">
               <p className="text-sm font-semibold leading-tight text-slate-900">{displayName}</p>
               <p className="text-xs leading-tight text-slate-500">{username}</p>
             </div>
-            <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="hidden sm:block h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
             </svg>
           </button>

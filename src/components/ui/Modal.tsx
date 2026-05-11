@@ -16,8 +16,14 @@ export default function Modal({ isOpen, onClose, title, children, className }: M
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
-    if (isOpen) document.addEventListener('keydown', handleKey)
-    return () => document.removeEventListener('keydown', handleKey)
+    if (isOpen) {
+      document.addEventListener('keydown', handleKey)
+      document.body.style.overflow = 'hidden'
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKey)
+      document.body.style.overflow = ''
+    }
   }, [isOpen, onClose])
 
   if (!isOpen) return null
@@ -28,7 +34,11 @@ export default function Modal({ isOpen, onClose, title, children, className }: M
       aria-modal="true"
       role="dialog"
     >
-      <div className="animate-overlay-show absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
+      <div
+        className="animate-overlay-show absolute inset-0 bg-black/40"
+        onClick={onClose}
+        aria-hidden="true"
+      />
       <div
         className={cn(
           'animate-content-show relative bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto',
@@ -37,19 +47,14 @@ export default function Modal({ isOpen, onClose, title, children, className }: M
       >
         {title && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+            <h2 className="text-base font-semibold text-slate-900">{title}</h2>
             <button
               onClick={onClose}
               className="text-slate-400 hover:text-slate-600 transition-colors rounded-md p-1"
               aria-label="Close modal"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>

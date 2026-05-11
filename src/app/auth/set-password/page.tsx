@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -84,7 +84,7 @@ function PasswordStrength({ value }: { value: string }) {
   )
 }
 
-export default function SetPasswordPage() {
+function SetPasswordContent() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email')
   const router = useRouter()
@@ -242,5 +242,17 @@ export default function SetPasswordPage() {
         </div>
       </Modal>
     </div>
+  )
+}
+
+export default function SetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
+      </div>
+    }>
+      <SetPasswordContent />
+    </Suspense>
   )
 }

@@ -79,5 +79,5 @@ export interface BusinessSummary {
   status: string
   logo_url: string | null
   category_id: string | null
-  business_categories: { name: string } | null
+  category_name: string | null
 }
