@@ -70,3 +70,14 @@ export type SelectOption = {
   label: string
   value: string
 }
+
+export interface BusinessSummary {
+  id: string
+  name: string
+  slug: string
+  city: string | null
+  status: string
+  logo_url: string | null
+  category_id: string | null
+  business_categories: { name: string } | null
+}

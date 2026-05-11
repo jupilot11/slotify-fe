@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { markEmailVerified } from '@/features/auth/services/emailVerificationCallback.service'
 import Button from '@/components/ui/Button'
 
@@ -15,6 +15,7 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const handleCallback = async () => {
+      const supabase = createClient()
       const hash = window.location.hash.substring(1)
       const params = new URLSearchParams(hash)
 
