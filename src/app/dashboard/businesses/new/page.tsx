@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -14,9 +14,8 @@ import BusinessHoursEditor, {
   type DayHours,
 } from '@/features/businesses/components/BusinessHoursEditor'
 import { useCreateBusiness } from '@/features/businesses/hooks/useCreateBusiness'
+import { useBusinessCategories } from '@/features/businesses/hooks/useBusinessCategories'
 import { useBusinessContext } from '@/lib/contexts/BusinessContext'
-import { createClient } from '@/lib/supabase/client'
-import type { SelectOption } from '@/types'
 
 const optionalEmail = z
   .string()
@@ -51,24 +50,7 @@ export default function NewBusinessPage() {
   const { status, error, submit } = useCreateBusiness()
 
   const [hours, setHours] = useState<DayHours[]>(DEFAULT_HOURS)
-  const [categories, setCategories] = useState<SelectOption[]>([])
-
-  useEffect(() => {
-    const supabase = createClient()
-    supabase
-      .from('business_categories')
-      .select('id, name')
-      .eq('is_active', true)
-      .order('sort_order')
-      .then(({ data }) => {
-        if (data) {
-          setCategories([
-            { label: 'No category', value: '' },
-            ...data.map((c) => ({ label: c.name, value: c.id })),
-          ])
-        }
-      })
-  }, [])
+  const { categories } = useBusinessCategories()
 
   const {
     register,

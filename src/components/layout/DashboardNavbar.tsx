@@ -1,37 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Logo from './Logo'
 import Avatar from '@/components/ui/Avatar'
-import { createClient } from '@/lib/supabase/client'
-
-interface UserInfo {
-  name: string
-  email: string
-}
+import { useUser } from '@/hooks/useUser'
 
 export default function DashboardNavbar() {
-  const [user, setUser] = useState<UserInfo | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { user, isLoading } = useUser()
 
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
-      if (authUser) {
-        setUser({
-          name:
-            authUser.user_metadata?.full_name ||
-            authUser.user_metadata?.name ||
-            authUser.email?.split('@')[0] ||
-            'User',
-          email: authUser.email ?? '',
-        })
-      }
-      setIsLoading(false)
-    })
-  }, [])
-
-  const displayName = user?.name ?? ''
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email?.split('@')[0] ||
+    ''
   const firstName = displayName.split(' ')[0]
   const username = user?.email?.split('@')[0] ?? ''
 
