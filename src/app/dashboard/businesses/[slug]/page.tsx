@@ -1,3 +1,6 @@
+import BusinessSlugSync from './_components/BusinessSlugSync'
+import BusinessPageTitle from './_components/BusinessPageTitle'
+
 export default async function BusinessDashboardPage({
   params,
 }: {
@@ -6,9 +9,12 @@ export default async function BusinessDashboardPage({
   const { slug } = await params
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-semibold text-slate-900 mb-1">Business Dashboard</h1>
-      <p className="text-sm text-slate-500 font-mono">{slug}</p>
-    </div>
+    <>
+      <BusinessSlugSync slug={slug} />
+      <div className="p-6">
+        <BusinessPageTitle />
+        <p className="mt-2 text-sm text-slate-600">This is the dashboard for your business.</p>
+      </div>
+    </>
   )
 }

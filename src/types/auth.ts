@@ -21,6 +21,19 @@ export interface RegistrationResponse {
 export interface AuthError {
   success?: boolean
   message: string
+  code?: string
+}
+
+export interface ResendVerificationLinkRequest {
+  email: string
+  site_url: string
+}
+
+export interface ResendVerificationLinkResponse {
+  success: boolean
+  emailSent?: boolean
+  warning?: string
+  error?: string
 }
 
 // ── Email Verification ───────────────────────────────────────────────────────

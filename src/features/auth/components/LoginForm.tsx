@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { toast } from 'sonner'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { useEmailVerification } from '@/features/auth/hooks/useEmailVerification'
 import PasswordSetupDialog from '@/features/auth/components/PasswordSetupDialog'
 import EyeIcon from '@/components/ui/EyeIcon'
+import { resendVerificationLink } from '@/features/auth/services/resendVerificationLink.service'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -21,9 +23,11 @@ export default function LoginForm() {
   const { status, error, passwordRequired, showPasswordSetupDialog, pendingEmail, dismissPasswordSetupDialog, submit, login, reset } = useEmailVerification()
   const [displayError, setDisplayError] = useState<typeof error>(null)
   const [showPassword, setShowPassword] = useState(false)
+  const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
   useEffect(() => {
     setDisplayError(error)
+    setResendStatus('idle')
   }, [error])
 
   const {
@@ -50,6 +54,19 @@ export default function LoginForm() {
   useEffect(() => {
     if (passwordRequired) setFocus('password')
   }, [passwordRequired, setFocus])
+
+  const handleResend = async () => {
+    if (!emailValue || resendStatus === 'loading' || resendStatus === 'success') return
+    setResendStatus('loading')
+    try {
+      await resendVerificationLink({ email: emailValue, site_url: window.location.origin })
+      setResendStatus('success')
+      toast.success('Verification email sent! Please check your inbox.')
+    } catch (err) {
+      setResendStatus('error')
+      toast.error(err instanceof Error ? err.message : 'Failed to resend verification email')
+    }
+  }
 
   const onSubmit = async (data: LoginFormData) => {
     if (passwordRequired) {
@@ -82,7 +99,23 @@ export default function LoginForm() {
                 d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
               />
             </svg>
-            <p className="text-sm text-red-700 leading-relaxed">{displayError.message}</p>
+            <div className="flex flex-col gap-1">
+              <p className="text-sm text-red-700 leading-relaxed">{displayError.message}</p>
+              {displayError.code === 'EMAIL_NOT_VERIFIED' && (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resendStatus === 'loading' || resendStatus === 'success'}
+                  className="text-sm text-red-700 underline hover:text-red-900 font-medium text-left disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+                >
+                  {resendStatus === 'loading'
+                    ? 'Sending…'
+                    : resendStatus === 'success'
+                    ? 'Verification email sent!'
+                    : 'Resend verification link'}
+                </button>
+              )}
+            </div>
           </div>
         )}
 

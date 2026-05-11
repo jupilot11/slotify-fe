@@ -1,15 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import Avatar from '@/components/ui/Avatar'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { useUser } from '@/hooks/useUser'
-import Modal from '@/components/ui/Modal'
-import Button from '@/components/ui/Button'
-import { logoutUser } from '@/features/auth/services/logout.service'
 import { useBusinessContext } from '@/lib/contexts/BusinessContext'
 import type { BusinessSummary } from '@/types'
 
@@ -80,19 +74,13 @@ function buildNavItems(slug: string): NavItem[] {
   ]
 }
 
-function BusinessSwitcher({
-  businesses,
+function BusinessLabel({
   selected,
   loading,
-  onSelect,
 }: {
-  businesses: BusinessSummary[]
   selected: BusinessSummary | null
   loading: boolean
-  onSelect: (biz: BusinessSummary) => void
 }) {
-  const [open, setOpen] = useState(false)
-
   if (loading) {
     return <Skeleton className="h-10 w-full rounded-lg" />
   }
@@ -112,59 +100,11 @@ function BusinessSwitcher({
   }
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
-      >
-        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-indigo-600 text-white text-xs font-bold">
-          {selected.name.charAt(0).toUpperCase()}
-        </div>
-        <span className="flex-1 text-left truncate">{selected.name}</span>
-        <svg
-          className={cn('h-4 w-4 text-slate-400 transition-transform', open && 'rotate-180')}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {open && (
-        <div className="absolute left-0 right-0 top-full z-10 mt-1 rounded-lg border border-slate-200 bg-white shadow-md overflow-hidden">
-          {businesses.map((biz) => (
-            <button
-              key={biz.id}
-              onClick={() => {
-                onSelect(biz)
-                setOpen(false)
-              }}
-              className={cn(
-                'flex w-full items-center gap-2 px-3 py-2.5 text-sm text-left transition-colors',
-                biz.id === selected.id
-                  ? 'bg-indigo-50 text-indigo-700 font-medium'
-                  : 'text-slate-700 hover:bg-slate-50',
-              )}
-            >
-              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-indigo-100 text-indigo-700 text-xs font-bold">
-                {biz.name.charAt(0).toUpperCase()}
-              </div>
-              <span className="truncate">{biz.name}</span>
-            </button>
-          ))}
-          <Link
-            href="/dashboard/businesses/new"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2 border-t border-slate-100 px-3 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition-colors"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Add Business
-          </Link>
-        </div>
-      )}
+    <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-indigo-600 text-white text-xs font-bold">
+        {selected.name.charAt(0).toUpperCase()}
+      </div>
+      <span className="flex-1 truncate text-sm font-medium text-slate-700">{selected.name}</span>
     </div>
   )
 }
@@ -176,26 +116,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname()
-  const { user } = useUser()
-  const { businesses, selectedBusiness, setSelectedBusiness, status } = useBusinessContext()
-  const [showLogoutDialog, setShowLogoutDialog] = useState(false)
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
-
-  const displayName =
-    (user?.user_metadata?.full_name as string | undefined) ??
-    user?.email?.split('@')[0] ??
-    '—'
-  const displayEmail = user?.email ?? ''
-
-  async function handleLogout() {
-    setIsLoggingOut(true)
-    try {
-      await logoutUser()
-      window.location.replace('/login')
-    } catch {
-      setIsLoggingOut(false)
-    }
-  }
+  const { selectedBusiness, status } = useBusinessContext()
 
   const navItems = selectedBusiness ? buildNavItems(selectedBusiness.slug) : []
 
@@ -226,14 +147,9 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
-          <BusinessSwitcher
-            businesses={businesses}
+          <BusinessLabel
             selected={selectedBusiness}
             loading={status === 'idle' || status === 'loading'}
-            onSelect={(biz) => {
-              setSelectedBusiness(biz)
-              onClose?.()
-            }}
           />
 
           {navItems.length > 0 && (
@@ -265,53 +181,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           )}
         </nav>
 
-        <div className="border-t border-slate-100 p-4 space-y-1">
-          <div className="flex items-center gap-3 px-2 py-2">
-            <Avatar name={displayName} size="sm" />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-900 truncate">{displayName}</p>
-              <p className="text-xs text-slate-500 truncate">{displayEmail}</p>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setShowLogoutDialog(true)}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
-            Log out
-          </button>
-        </div>
       </aside>
-
-      <Modal
-        isOpen={showLogoutDialog}
-        onClose={() => !isLoggingOut && setShowLogoutDialog(false)}
-        title="Log out"
-      >
-        <p className="text-sm text-slate-600 mb-6">
-          Are you sure you want to log out? You will need to sign in again to access your dashboard.
-        </p>
-        <div className="flex justify-end gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => setShowLogoutDialog(false)}
-            disabled={isLoggingOut}
-          >
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleLogout} disabled={isLoggingOut}>
-            {isLoggingOut ? 'Logging out…' : 'Log out'}
-          </Button>
-        </div>
-      </Modal>
     </>
   )
 }

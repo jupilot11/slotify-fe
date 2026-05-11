@@ -49,7 +49,7 @@ export function useEmailVerification(): UseEmailVerificationReturn {
     try {
       const data = await verifyEmail({ email: parsed.data.email.trim().toLowerCase() })
       if (!data.email_verified) {
-        setError({ message: data.message ?? 'Failed to resend verification email' })
+        setError({ message: data.message ?? 'Your email is not yet verified.', code: 'EMAIL_NOT_VERIFIED' })
         return setStatus('error')
       }
       if (!data.password_set) {
