@@ -194,7 +194,7 @@ export default function BusinessCard({ business }: { business: BusinessSummary }
           </div>
 
           {/* Logo overlapping the gradient border */}
-          <div className="absolute -bottom-7 left-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white border-2 border-slate-100 shadow-md text-indigo-600 font-bold text-xl overflow-hidden">
+          <div className="absolute -bottom-7 left-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-white border-2 border-slate-100 shadow-md text-indigo-600 font-bold text-xl overflow-hidden">
             {business.logo_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img

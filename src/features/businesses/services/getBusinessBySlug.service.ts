@@ -16,6 +16,7 @@ export interface BusinessDetail {
   postal_code: string | null
   logo_url: string | null
   banner_url: string | null
+  image_urls: string[]
   hours: DayHours[]
 }
 

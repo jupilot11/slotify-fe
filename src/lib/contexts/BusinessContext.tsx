@@ -41,8 +41,11 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
         if (!cancelled) {
           setBusinesses(data)
           setStatus('success')
-          // Auto-select first business if none is selected yet
-          setSelectedBusiness((prev) => prev ?? data[0] ?? null)
+          // Keep selection if it still exists, otherwise fall back to first
+          setSelectedBusiness((prev) => {
+            if (prev === null) return data[0] ?? null
+            return data.find((b) => b.id === prev.id) ?? data[0] ?? null
+          })
         }
       })
       .catch((err) => {

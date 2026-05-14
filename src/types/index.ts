@@ -78,6 +78,33 @@ export interface BusinessSummary {
   city: string | null
   status: string
   logo_url: string | null
+  banner_url: string | null
   category_id: string | null
   category_name: string | null
+}
+
+export interface BusinessService {
+  id: string
+  business_id: string
+  name: string
+  slug: string
+  description: string | null
+  image_url: string | null
+  service_type: 'appointment' | 'time_slot'
+  min_duration_minutes: number
+  max_duration_minutes: number | null
+  duration_note: string | null
+  buffer_time_minutes: number
+  pricing_type: 'fixed' | 'range' | 'on_request'
+  price_amount: number | null
+  price_min: number | null
+  price_max: number | null
+  price_note: string | null
+  currency: string
+  max_capacity: number
+  requires_confirmation: boolean
+  is_active: boolean
+  sort_order: number
+  created_at: string
+  updated_at: string
 }

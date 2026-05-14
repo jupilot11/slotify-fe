@@ -20,6 +20,7 @@ export interface CreateBusinessPayload {
   postal_code?: string
   logo_url?: string
   banner_url?: string
+  image_urls?: string[]
   hours?: BusinessHour[]
 }
 
