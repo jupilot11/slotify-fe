@@ -1,128 +1,124 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { getAllBusinesses } from '@/services/business.service'
-import { getBookings } from '@/services/booking.service'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
-import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/Card'
-import Logo from '@/components/layout/Logo'
 
-export const metadata: Metadata = { title: 'Admin – Slotify' }
+export const metadata: Metadata = { title: 'Overview – Admin' }
 
-export default async function AdminPage() {
-  const [businessResult] = await Promise.all([getAllBusinesses()])
-  const businesses = businessResult.data
+const stats = [
+  { label: 'Total Users', value: '1,284', change: '+12 this week', trend: 'up' },
+  { label: 'Total Businesses', value: '47', change: '+3 this month', trend: 'up' },
+  { label: 'Bookings Today', value: '138', change: '-5 vs yesterday', trend: 'down' },
+  { label: 'Monthly Revenue', value: '₱48,200', change: '+8.4% vs last month', trend: 'up' },
+]
 
-  const bookingCounts = await Promise.all(
-    businesses.map(async (biz) => {
-      const result = await getBookings(biz.id)
-      return { businessId: biz.id, count: result.total }
-    })
-  )
+const recentActivity = [
+  { id: 1, type: 'business', message: 'New business "Glow Studio" registered', time: '2 min ago', badge: 'info' as const },
+  { id: 2, type: 'user', message: 'User juan.dela.cruz@email.com verified their email', time: '14 min ago', badge: 'success' as const },
+  { id: 3, type: 'booking', message: 'Booking #BK-2291 cancelled by customer', time: '31 min ago', badge: 'warning' as const },
+  { id: 4, type: 'business', message: 'Business "Prime Cuts" suspended by admin', time: '1 hr ago', badge: 'danger' as const },
+  { id: 5, type: 'user', message: 'New user maria.santos@email.com registered', time: '2 hr ago', badge: 'info' as const },
+  { id: 6, type: 'booking', message: '42 bookings completed across all businesses', time: '3 hr ago', badge: 'success' as const },
+]
 
-  const countMap = Object.fromEntries(bookingCounts.map((b) => [b.businessId, b.count]))
+const topBusinesses = [
+  { name: 'Prime Cuts Barbershop', slug: 'prime-cuts', bookings: 312, category: 'Barbershop', status: 'active' },
+  { name: 'Glow Studio', slug: 'glow-studio', bookings: 278, category: 'Salon', status: 'active' },
+  { name: 'HealthFirst Clinic', slug: 'healthfirst', bookings: 201, category: 'Clinic', status: 'active' },
+  { name: 'The Nail Bar', slug: 'nail-bar', bookings: 156, category: 'Salon', status: 'active' },
+  { name: 'FreshFade Shop', slug: 'freshfade', bookings: 98, category: 'Barbershop', status: 'inactive' },
+]
 
+export default function AdminOverviewPage() {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 h-16 flex items-center px-6 gap-6">
-        <Logo />
-        <span className="text-sm font-medium text-slate-500 bg-red-100 text-red-700 px-3 py-1 rounded-full">
-          Admin Panel
-        </span>
-        <div className="ml-auto">
-          <Link href="/dashboard" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-            Back to dashboard
-          </Link>
-        </div>
-      </header>
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Platform Overview</h1>
+        <p className="text-sm text-slate-500 mt-1">Welcome back. Here&apos;s what&apos;s happening across Slotify.</p>
+      </div>
 
-      <main className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Platform stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="p-6">
-            <p className="text-sm text-slate-500">Total Businesses</p>
-            <p className="text-3xl font-bold text-slate-900 mt-2">{businesses.length}</p>
-          </Card>
-          <Card className="p-6">
-            <p className="text-sm text-slate-500">Active Businesses</p>
-            <p className="text-3xl font-bold text-slate-900 mt-2">
-              {businesses.filter((b) => b.isActive).length}
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {stats.map((stat) => (
+          <Card key={stat.label} className="p-5">
+            <p className="text-sm text-slate-500">{stat.label}</p>
+            <p className="text-3xl font-bold text-slate-900 mt-1">{stat.value}</p>
+            <p className={`text-xs mt-2 font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-500'}`}>
+              {stat.change}
             </p>
           </Card>
-          <Card className="p-6">
-            <p className="text-sm text-slate-500">Total Bookings</p>
-            <p className="text-3xl font-bold text-slate-900 mt-2">
-              {Object.values(countMap).reduce((a, b) => a + b, 0)}
-            </p>
-          </Card>
-        </div>
+        ))}
+      </div>
 
-        {/* Businesses table */}
-        <Card>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Recent Activity */}
+        <Card className="xl:col-span-2">
           <CardHeader>
-            <CardTitle>All Businesses</CardTitle>
+            <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50">
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                    Business
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                    Category
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                    Slug
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                    Bookings
-                  </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                    Status
-                  </th>
-                  <th className="text-right px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {businesses.map((biz) => (
-                  <tr key={biz.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <p className="font-semibold text-slate-900">{biz.name}</p>
-                      {biz.address && (
-                        <p className="text-xs text-slate-400 mt-0.5">{biz.address}</p>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="capitalize text-slate-600">{biz.category}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <code className="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                        {biz.slug}
-                      </code>
-                    </td>
-                    <td className="px-6 py-4 text-slate-600">{countMap[biz.id] ?? 0}</td>
-                    <td className="px-6 py-4">
-                      <Badge variant={biz.isActive ? 'success' : 'default'}>
-                        {biz.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <Link
-                        href={`/${biz.slug}`}
-                        className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
-                      >
-                        View page
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <CardContent className="p-0">
+            <ul className="divide-y divide-slate-50">
+              {recentActivity.map((item) => (
+                <li key={item.id} className="flex items-start gap-3 px-6 py-3.5">
+                  <Badge variant={item.badge} className="mt-0.5 shrink-0 capitalize">{item.type}</Badge>
+                  <p className="flex-1 text-sm text-slate-700 leading-snug">{item.message}</p>
+                  <span className="text-xs text-slate-400 shrink-0">{item.time}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
         </Card>
-      </main>
+
+        {/* Quick Actions */}
+        <div className="space-y-4">
+          <Card className="p-5">
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">Quick Actions</h3>
+            <ul className="space-y-2">
+              {[
+                { label: 'View all businesses', href: '/admin/businesses' },
+                { label: 'Manage users', href: '/admin/users' },
+                { label: 'Review bookings', href: '/admin/bookings' },
+                { label: 'Platform settings', href: '/admin/settings' },
+              ].map((action) => (
+                <li key={action.href}>
+                  <Link
+                    href={action.href}
+                    className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors group"
+                  >
+                    {action.label}
+                    <svg className="h-4 w-4 text-slate-300 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Card>
+
+          {/* Top Businesses */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Top Businesses</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <ul className="divide-y divide-slate-50">
+                {topBusinesses.map((biz) => (
+                  <li key={biz.slug} className="flex items-center gap-3 px-6 py-3">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold">
+                      {biz.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-800 truncate">{biz.name}</p>
+                      <p className="text-xs text-slate-400">{biz.category}</p>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-700">{biz.bookings}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }

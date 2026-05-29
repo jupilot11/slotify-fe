@@ -34,7 +34,7 @@ const optionalUrl = z
 
 const schema = z.object({
   name: z.string().min(1, 'Business name is required').max(100),
-  category_id: z.string().optional(),
+  category_id: z.string().min(1, 'Category is required'),
   description: z.string().max(500).optional(),
   email: optionalEmail,
   phone: z.string().max(20).optional(),
@@ -288,7 +288,7 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
 
       await updateBusiness(business.id, {
         name: data.name,
-        category_id: data.category_id || undefined,
+        category_id: data.category_id,
         description: data.description || undefined,
         email: data.email || undefined,
         phone: data.phone || undefined,
@@ -360,7 +360,7 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
                   {...register('name')}
                 />
                 <Select
-                  label="Category"
+                  label="Category *"
                   options={categories}
                   disabled={isDisabled}
                   error={errors.category_id?.message}
