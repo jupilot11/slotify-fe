@@ -83,6 +83,43 @@ export interface BusinessSummary {
   category_name: string | null
 }
 
+export type AdminBusinessStatus = 'approved' | 'pending' | 'rejected' | 'inactive'
+
+export interface AdminBusiness {
+  id: string
+  name: string
+  slug: string
+  owner_name: string | null
+  email: string | null
+  phone: string | null
+  status: AdminBusinessStatus
+  created_at: string
+  category_name: string | null
+}
+
+export interface AdminBusinessDetail {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  city: string | null
+  address: string | null
+  phone: string | null
+  logo_url: string | null
+  banner_url: string | null
+  status: AdminBusinessStatus
+  created_at: string
+  updated_at: string
+  owner_id: string
+  owner_name: string | null
+  owner_phone: string | null
+  email: string | null
+  category_id: string | null
+  category_name: string | null
+  services_count: number
+  bookings_count: number
+}
+
 export interface BusinessService {
   id: string
   business_id: string

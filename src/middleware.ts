@@ -29,17 +29,38 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  if (!user && pathname.startsWith('/dashboard')) {
+  const isProtected = pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname === '/login'
+
+  if (!user && (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (user && pathname === '/login') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  if (user && isProtected) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('roles')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    const roles = Array.isArray(profile?.roles) ? (profile.roles as string[]) : []
+    const isAdmin = roles.includes('admin')
+
+    if (pathname === '/login') {
+      return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/dashboard', request.url))
+    }
+
+    if (isAdmin && pathname.startsWith('/dashboard')) {
+      return NextResponse.redirect(new URL('/admin', request.url))
+    }
+
+    if (!isAdmin && pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
   }
 
   return response
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'],
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/login'],
 }
