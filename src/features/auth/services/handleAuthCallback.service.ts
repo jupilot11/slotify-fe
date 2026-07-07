@@ -10,6 +10,7 @@ interface HandleAuthCallbackParams {
 interface HandleAuthCallbackResult {
   success: boolean
   error?: string
+  redirectTo?: string
 }
 
 export async function handleAuthCallback({
@@ -26,6 +27,10 @@ export async function handleAuthCallback({
 
   if (sessionError) {
     return { success: false, error: 'Invalid or expired verification link. Please request a new one.' }
+  }
+
+  if (type === 'recovery') {
+    return { success: true, redirectTo: '/auth/reset-password' }
   }
 
   if (type === 'signup') {
