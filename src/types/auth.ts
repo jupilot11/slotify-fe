@@ -121,3 +121,21 @@ export interface LoginResponse {
 export type RegistrationStatus = 'idle' | 'loading' | 'success' | 'error'
 export type EmailVerificationStatus = 'idle' | 'loading' | 'success' | 'error'
 export type SetPasswordStatus = 'idle' | 'loading' | 'success' | 'error'
+
+// ── Forgot Password ──────────────────────────────────────────────────────────
+
+export interface ForgotPasswordRequest {
+  email: string
+  site_url: string
+}
+
+export interface ForgotPasswordResponse {
+  success: boolean
+  error?: string
+}
+
+export type ForgotPasswordStatus = 'idle' | 'loading' | 'success' | 'error'
+
+// ── Reset Password ───────────────────────────────────────────────────────────
+
+export type ResetPasswordStatus = 'idle' | 'loading' | 'success' | 'error'
