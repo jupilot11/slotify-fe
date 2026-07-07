@@ -11,6 +11,7 @@ import { useEmailVerification } from '@/features/auth/hooks/useEmailVerification
 import PasswordSetupDialog from '@/features/auth/components/PasswordSetupDialog'
 import EyeIcon from '@/components/ui/EyeIcon'
 import { resendVerificationLink } from '@/features/auth/services/resendVerificationLink.service'
+import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -24,6 +25,7 @@ export default function LoginForm() {
   const [displayError, setDisplayError] = useState<typeof error>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
 
   useEffect(() => {
     setDisplayError(error)
@@ -83,6 +85,7 @@ export default function LoginForm() {
   return (
     <>
       <PasswordSetupDialog isOpen={showPasswordSetupDialog} onClose={dismissPasswordSetupDialog} email={pendingEmail} />
+      <ForgotPasswordDialog isOpen={showForgotPassword} onClose={() => setShowForgotPassword(false)} />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {displayError && (
           <div className="flex items-start gap-3 bg-red-50 border-l-4 border-red-500 px-4 py-3 rounded-r-lg">
@@ -181,6 +184,7 @@ export default function LoginForm() {
             </label>
             <button
               type="button"
+              onClick={() => setShowForgotPassword(true)}
               className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
             >
               Forgot password?
