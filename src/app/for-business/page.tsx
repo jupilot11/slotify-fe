@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import Logo from '@/components/layout/Logo'
+import PricingSection from './_components/PricingSection'
 
 const features = [
   {
@@ -80,6 +81,12 @@ export default function ForBusinessPage() {
             </Link>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="#pricing"
+              className="hidden sm:block text-sm text-slate-500 hover:text-slate-700 transition-colors font-medium px-2"
+            >
+              Pricing
+            </Link>
             <Link href="/login">
               <Button variant="ghost" size="sm">
                 Sign in
@@ -116,7 +123,6 @@ export default function ForBusinessPage() {
               <Button size="lg" variant="outline">See how it works</Button>
             </Link>
           </div>
-          <p className="mt-5 text-sm text-slate-400">No credit card required · Free forever plan</p>
         </div>
       </section>
 
@@ -162,6 +168,9 @@ export default function ForBusinessPage() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <PricingSection />
+
       {/* Bottom CTA */}
       <section className="bg-indigo-600 py-20 px-4">
         <div className="max-w-2xl mx-auto text-center">
@@ -189,7 +198,6 @@ export default function ForBusinessPage() {
               </button>
             </Link>
           </div>
-          <p className="mt-5 text-indigo-200/70 text-sm">No credit card required · Free forever plan</p>
         </div>
       </section>
 

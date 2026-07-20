@@ -1,4 +1,15 @@
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed'
+
+export interface SubscriptionPlan {
+  id: string
+  name: 'basic' | 'standard' | 'pro'
+  display_name: string
+  price_php: number
+  max_businesses: number
+  featured_months: number
+  description: string | null
+  sort_order: number
+}
 export type ServiceStatus = 'active' | 'inactive'
 export type BusinessCategory = 'barbershop' | 'clinic' | 'salon' | 'other'
 
