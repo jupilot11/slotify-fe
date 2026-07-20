@@ -20,6 +20,7 @@ import { useBusinessContext } from '@/lib/contexts/BusinessContext'
 import {
   uploadBusinessImageStaging,
 } from '@/features/businesses/services/uploadBusinessImage.service'
+import LocationPicker, { type LocationValue } from '@/features/businesses/components/LocationPicker'
 
 const optionalEmail = z
   .string()
@@ -38,10 +39,6 @@ const schema = z.object({
   email: optionalEmail,
   phone: z.string().max(20).optional(),
   website_url: optionalUrl,
-  address: z.string().optional(),
-  city: z.string().optional(),
-  province: z.string().optional(),
-  postal_code: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -53,6 +50,7 @@ export default function NewBusinessPage() {
   const { status, error, submit } = useCreateBusiness()
   const { categories } = useBusinessCategories()
   const [hours, setHours] = useState<DayHours[]>(DEFAULT_HOURS)
+  const [location, setLocation] = useState<LocationValue | null>(null)
 
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
@@ -170,10 +168,12 @@ export default function NewBusinessPage() {
       email: data.email || undefined,
       phone: data.phone || undefined,
       website_url: data.website_url || undefined,
-      address: data.address || undefined,
-      city: data.city || undefined,
-      province: data.province || undefined,
-      postal_code: data.postal_code || undefined,
+      address: location?.address || undefined,
+      city: location?.city || undefined,
+      province: location?.province || undefined,
+      postal_code: location?.postal_code || undefined,
+      lat: location?.lat,
+      lng: location?.lng,
       logo_url,
       banner_url,
       image_urls: image_urls.length > 0 ? image_urls : undefined,
@@ -283,37 +283,8 @@ export default function NewBusinessPage() {
             <CardHeader>
               <CardTitle>Location</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Input
-                label="Street address"
-                placeholder="123 Main Street"
-                disabled={isDisabled}
-                error={errors.address?.message}
-                {...register('address')}
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Input
-                  label="City"
-                  placeholder="Makati"
-                  disabled={isDisabled}
-                  error={errors.city?.message}
-                  {...register('city')}
-                />
-                <Input
-                  label="Province"
-                  placeholder="Metro Manila"
-                  disabled={isDisabled}
-                  error={errors.province?.message}
-                  {...register('province')}
-                />
-                <Input
-                  label="Postal code"
-                  placeholder="1200"
-                  disabled={isDisabled}
-                  error={errors.postal_code?.message}
-                  {...register('postal_code')}
-                />
-              </div>
+            <CardContent>
+              <LocationPicker value={location} onChange={setLocation} disabled={isDisabled} />
             </CardContent>
           </Card>
 

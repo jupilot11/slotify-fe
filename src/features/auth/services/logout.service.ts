@@ -5,4 +5,5 @@ export async function logoutUser(): Promise<void> {
   // Supabase clears local session cookies even when server revocation fails
   // (e.g. invalid/expired refresh token), so never throw here.
   await supabase.auth.signOut()
+  document.cookie = 'slotify_session_start=; path=/; max-age=0; SameSite=Lax'
 }

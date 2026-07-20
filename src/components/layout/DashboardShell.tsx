@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation'
 import Sidebar from './Sidebar'
 import DashboardNavbar from './DashboardNavbar'
 import type { ReactNode } from 'react'
+import { useSessionExpiry } from '@/hooks/useSessionExpiry'
+import SessionExpiryModal from '@/features/auth/components/SessionExpiryModal'
 
 interface DashboardShellProps {
   children: ReactNode
@@ -14,6 +16,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const pathname = usePathname()
   const isHub = pathname === '/dashboard'
+  const { showWarning, secondsRemaining } = useSessionExpiry()
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-slate-50">
@@ -33,6 +36,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
         )}
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
+      <SessionExpiryModal isOpen={showWarning} secondsRemaining={secondsRemaining} />
     </div>
   )
 }

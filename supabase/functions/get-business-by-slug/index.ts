@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
     const { data: business, error: bizError } = await supabase
       .from("businesses")
       .select(
-        "id, name, slug, category_id, description, email, phone, website_url, address, city, province, postal_code, logo_url, banner_url, image_urls"
+        "id, name, slug, category_id, description, email, phone, website_url, address, city, province, postal_code, latitude, longitude, logo_url, banner_url, image_urls"
       )
       .eq("slug", slug)
       .eq("owner_id", user.id)
@@ -72,6 +72,8 @@ Deno.serve(async (req) => {
         city: business.city,
         province: business.province,
         postal_code: business.postal_code,
+        latitude: business.latitude ?? null,
+        longitude: business.longitude ?? null,
         logo_url: business.logo_url,
         banner_url: business.banner_url,
         image_urls: business.image_urls ?? [],

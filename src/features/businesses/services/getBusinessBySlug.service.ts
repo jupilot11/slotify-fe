@@ -14,6 +14,8 @@ export interface BusinessDetail {
   city: string | null
   province: string | null
   postal_code: string | null
+  latitude: number | null
+  longitude: number | null
   logo_url: string | null
   banner_url: string | null
   image_urls: string[]

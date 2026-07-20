@@ -21,6 +21,7 @@ import { useBusinessContext } from '@/lib/contexts/BusinessContext'
 import { updateBusiness } from '@/features/businesses/services/updateBusiness.service'
 import { uploadBusinessImage } from '@/features/businesses/services/uploadBusinessImage.service'
 import Modal from '@/components/ui/Modal'
+import LocationPicker, { type LocationValue } from '@/features/businesses/components/LocationPicker'
 
 const optionalEmail = z
   .string()
@@ -39,10 +40,6 @@ const schema = z.object({
   email: optionalEmail,
   phone: z.string().max(20).optional(),
   website_url: optionalUrl,
-  address: z.string().optional(),
-  city: z.string().optional(),
-  province: z.string().optional(),
-  postal_code: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -62,7 +59,7 @@ function SkeletonField({ tall = false }: { tall?: boolean }) {
   )
 }
 
-function EditBusinessSkeleton() {
+function SettingsSkeleton() {
   return (
     <div className="p-4 sm:p-6">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -133,7 +130,7 @@ function EditBusinessSkeleton() {
   )
 }
 
-export default function EditBusinessForm({ slug }: { slug: string }) {
+export default function SettingsForm({ slug }: { slug: string }) {
   const router = useRouter()
   const { data: business, loading: businessLoading, error, reload: reloadDetails } = useBusinessDetails(slug)
   const { categories } = useBusinessCategories()
@@ -151,6 +148,8 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
   const [bannerFile, setBannerFile] = useState<File | null>(null)
   const [bannerPreview, setBannerPreview] = useState<string | null>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
+
+  const [location, setLocation] = useState<LocationValue | null>(null)
 
   const [supportingSlots, setSupportingSlots] = useState<Array<SupportingSlot | null>>(
     Array(5).fill(null)
@@ -174,10 +173,6 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
         email: business.email ?? undefined,
         phone: business.phone ?? undefined,
         website_url: business.website_url ?? undefined,
-        address: business.address ?? undefined,
-        city: business.city ?? undefined,
-        province: business.province ?? undefined,
-        postal_code: business.postal_code ?? undefined,
       })
       setLogoPreview(business.logo_url ?? null)
       setBannerPreview(business.banner_url ?? null)
@@ -187,11 +182,21 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
       })
       setSupportingSlots(slots)
       if (business.hours?.length > 0) setHours(business.hours)
+      if (business.latitude != null && business.longitude != null) {
+        setLocation({
+          address: business.address ?? '',
+          city: business.city ?? '',
+          province: business.province ?? '',
+          postal_code: business.postal_code ?? '',
+          lat: business.latitude,
+          lng: business.longitude,
+        })
+      }
     }
   }, [business, categories, reset])
 
   const isReady = !businessLoading && !error && !!business && categories.length > 0
-  if (!isReady) return <EditBusinessSkeleton />
+  if (!isReady) return <SettingsSkeleton />
 
   if (error) {
     return (
@@ -293,10 +298,12 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
         email: data.email || undefined,
         phone: data.phone || undefined,
         website_url: data.website_url || undefined,
-        address: data.address || undefined,
-        city: data.city || undefined,
-        province: data.province || undefined,
-        postal_code: data.postal_code || undefined,
+        address: location?.address || undefined,
+        city: location?.city || undefined,
+        province: location?.province || undefined,
+        postal_code: location?.postal_code || undefined,
+        lat: location?.lat,
+        lng: location?.lng,
         logo_url,
         banner_url,
         image_urls,
@@ -313,9 +320,10 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
 
   function handleSuccessClose() {
     setShowSuccess(false)
+    setSubmitStatus('idle')
     reloadDetails()
     reloadContext()
-    router.push(`/dashboard/businesses/${slug}`)
+    router.push(`/dashboard/businesses/${slug}/settings`)
   }
 
   return (
@@ -342,7 +350,7 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
       <div className="p-4 sm:p-6">
         <div className="max-w-2xl mx-auto space-y-6">
           <div>
-            <h1 className="text-xl font-semibold text-slate-900">Edit Business</h1>
+            <h1 className="text-xl font-semibold text-slate-900">Settings</h1>
             <p className="mt-1 text-sm text-slate-500">Update your business details below.</p>
           </div>
 
@@ -414,41 +422,11 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
               <CardHeader>
                 <CardTitle>Location</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <Input
-                  label="Street address"
-                  placeholder="123 Main Street"
-                  disabled={isDisabled}
-                  error={errors.address?.message}
-                  {...register('address')}
-                />
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <Input
-                    label="City"
-                    placeholder="Makati"
-                    disabled={isDisabled}
-                    error={errors.city?.message}
-                    {...register('city')}
-                  />
-                  <Input
-                    label="Province"
-                    placeholder="Metro Manila"
-                    disabled={isDisabled}
-                    error={errors.province?.message}
-                    {...register('province')}
-                  />
-                  <Input
-                    label="Postal code"
-                    placeholder="1200"
-                    disabled={isDisabled}
-                    error={errors.postal_code?.message}
-                    {...register('postal_code')}
-                  />
-                </div>
+              <CardContent>
+                <LocationPicker value={location} onChange={setLocation} disabled={isDisabled} />
               </CardContent>
             </Card>
 
-            {/* Media: logo + banner */}
             <Card>
               <CardHeader>
                 <CardTitle>Media</CardTitle>
@@ -561,7 +539,6 @@ export default function EditBusinessForm({ slug }: { slug: string }) {
               </CardContent>
             </Card>
 
-            {/* Supporting Images */}
             <Card>
               <CardHeader>
                 <div>

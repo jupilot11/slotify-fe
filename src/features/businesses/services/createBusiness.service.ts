@@ -18,6 +18,8 @@ export interface CreateBusinessPayload {
   city?: string
   province?: string
   postal_code?: string
+  lat?: number
+  lng?: number
   logo_url?: string
   banner_url?: string
   image_urls?: string[]

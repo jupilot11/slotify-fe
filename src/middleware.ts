@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const SESSION_MAX_AGE_MS = 86_400_000 // 24 hours
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
 
@@ -33,6 +35,31 @@ export async function middleware(request: NextRequest) {
 
   if (!user && (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))) {
     return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  if (user && (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))) {
+    const sessionStartVal = request.cookies.get('slotify_session_start')?.value
+    const sessionStart = sessionStartVal ? parseInt(sessionStartVal, 10) : NaN
+
+    if (isNaN(sessionStart) || Date.now() - sessionStart >= SESSION_MAX_AGE_MS) {
+      try { await supabase.auth.signOut() } catch { /* ignore */ }
+
+      const expiredUrl = new URL('/login', request.url)
+      expiredUrl.searchParams.set('expired', 'true')
+      const expiredResponse = NextResponse.redirect(expiredUrl)
+
+      for (const cookie of response.cookies.getAll()) {
+        expiredResponse.cookies.set(cookie.name, cookie.value, {
+          path: cookie.path,
+          maxAge: cookie.maxAge,
+          httpOnly: cookie.httpOnly,
+          secure: cookie.secure,
+          sameSite: cookie.sameSite as 'lax' | 'strict' | 'none' | undefined,
+        })
+      }
+      expiredResponse.cookies.set('slotify_session_start', '', { path: '/', maxAge: 0, sameSite: 'lax' })
+      return expiredResponse
+    }
   }
 
   if (user && isProtected) {

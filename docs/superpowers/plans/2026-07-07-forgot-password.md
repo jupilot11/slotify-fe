@@ -4,6 +4,8 @@
 
 **Goal:** Implement a complete forgot password flow — modal on the login page, reset email via edge function, recovery callback handling, and a new reset-password page.
 
+> **Note for agentic execution:** Do NOT auto-commit after each step. Stage and show the diff to the user for review before committing. Only commit when the user explicitly approves.
+
 **Architecture:** "Forgot password?" button in `LoginForm` opens a `ForgotPasswordDialog` modal; submitting calls a new `send-password-reset` edge function which triggers Supabase's built-in recovery email. The user clicks the link, lands on `/auth/callback` (extended to detect `type=recovery`), the session is set and the user is redirected to a new `/auth/reset-password` page where they submit their new password via `supabase.auth.updateUser`.
 
 **Tech Stack:** Next.js 16 App Router, Supabase JS v2, React Hook Form, Zod, Tailwind CSS, Deno edge functions

@@ -12,5 +12,7 @@ export async function loginUser(payload: LoginRequest): Promise<LoginResponse> {
   })
   if (sessionError) throw sessionError
 
+  document.cookie = `slotify_session_start=${Date.now()}; path=/; max-age=86400; SameSite=Lax`
+
   return data
 }

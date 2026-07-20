@@ -169,7 +169,7 @@ export default function BusinessCard({ business }: { business: BusinessSummary }
                   className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                   onClick={() => {
                     setMenuOpen(false)
-                    router.push(`/dashboard/businesses/${business.slug}/edit`)
+                    router.push(`/dashboard/businesses/${business.slug}/settings`)
                   }}
                 >
                   <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

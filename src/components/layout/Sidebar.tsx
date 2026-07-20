@@ -130,6 +130,18 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+          {selectedBusiness && (
+            <Link
+              href="/dashboard"
+              onClick={onClose}
+              className="flex items-center gap-1.5 px-1 text-xs text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <svg className="h-3 w-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              All businesses
+            </Link>
+          )}
           <BusinessLabel
             selected={selectedBusiness}
             loading={status === 'idle' || status === 'loading'}
