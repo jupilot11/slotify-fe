@@ -112,7 +112,7 @@ export default function PricingTable() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/70">
-                {['Plan', 'Description', 'Price', 'Interval', 'Features', 'Status', 'Created', 'Actions'].map((h) => (
+                {['Plan', 'Description', 'Price', 'Interval', 'Status', 'Created', 'Actions'].map((h) => (
                   <th key={h} className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                     {h}
                   </th>
@@ -127,7 +127,6 @@ export default function PricingTable() {
                     <td className="px-6 py-4"><Skeleton className="h-3.5 w-40" /></td>
                     <td className="px-6 py-4"><Skeleton className="h-3.5 w-20" /></td>
                     <td className="px-6 py-4"><Skeleton className="h-3.5 w-16" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-5 w-20 rounded-full" /></td>
                     <td className="px-6 py-4"><Skeleton className="h-5 w-16 rounded-full" /></td>
                     <td className="px-6 py-4"><Skeleton className="h-3.5 w-24" /></td>
                     <td className="px-6 py-4"><div className="flex gap-2"><Skeleton className="h-6 w-10 rounded-md" /><Skeleton className="h-6 w-14 rounded-md" /></div></td>
@@ -135,7 +134,7 @@ export default function PricingTable() {
                 ))
               ) : plans.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-16 text-center">
+                  <td colSpan={7} className="px-6 py-16 text-center">
                     <div className="flex flex-col items-center gap-3">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
                         <svg className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -165,11 +164,6 @@ export default function PricingTable() {
                     </td>
                     <td className="px-6 py-4 text-slate-600">
                       {INTERVAL_LABELS[plan.billing_interval] ?? plan.billing_interval}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-                        {plan.features.length} features
-                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <Badge variant={plan.is_active ? 'success' : 'default'}>

@@ -11,11 +11,9 @@ export interface SubscriptionPlan {
   currency: string
   billing_interval: BillingInterval
   trial_period_days: number | null
-  features: string[]
   max_businesses: number
   max_users: number | null
-  max_storage_gb: number | null
-  api_limit: number | null
+  max_services: number | null
   featured_months: number
   sort_order: number
   is_active: boolean

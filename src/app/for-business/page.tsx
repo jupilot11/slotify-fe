@@ -2,6 +2,8 @@ import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import Logo from '@/components/layout/Logo'
 import PricingSection from './_components/PricingSection'
+import ScrollSpy from './_components/ScrollSpy'
+import { getSubscriptionPlansServer } from '@/features/subscription/services/getSubscriptionPlans.server'
 
 const features = [
   {
@@ -62,9 +64,12 @@ const features = [
 
 const businessTypes = ['Barbershops', 'Hair Salons', 'Dental Clinics', 'Massage Therapists', 'Personal Trainers']
 
-export default function ForBusinessPage() {
+export default async function ForBusinessPage() {
+  const plans = await getSubscriptionPlansServer()
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <ScrollSpy />
       {/* Header */}
       <header className="border-b border-slate-100 sticky top-0 bg-white/90 backdrop-blur-sm z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -92,8 +97,8 @@ export default function ForBusinessPage() {
                 Sign in
               </Button>
             </Link>
-            <Link href="/login">
-              <Button size="sm">Get started free</Button>
+            <Link href="#pricing">
+              <Button size="sm">Get started</Button>
             </Link>
           </div>
         </div>
@@ -116,8 +121,8 @@ export default function ForBusinessPage() {
             scheduling and more time doing what you love.
           </p>
           <div className="flex items-center justify-center gap-3 flex-wrap">
-            <Link href="/login">
-              <Button size="lg">Start for free</Button>
+            <Link href="#pricing">
+              <Button size="lg">Get started</Button>
             </Link>
             <Link href="#features">
               <Button size="lg" variant="outline">See how it works</Button>
@@ -169,7 +174,7 @@ export default function ForBusinessPage() {
       </section>
 
       {/* Pricing */}
-      <PricingSection />
+      <PricingSection plans={plans} />
 
       {/* Bottom CTA */}
       <section className="bg-indigo-600 py-20 px-4">
@@ -181,12 +186,12 @@ export default function ForBusinessPage() {
             Join hundreds of businesses already using Slotify to manage their appointments.
           </p>
           <div className="flex items-center justify-center gap-3 flex-wrap">
-            <Link href="/login">
+            <Link href="#pricing">
               <button
                 type="button"
                 className="bg-white text-indigo-600 rounded-lg px-8 py-3 font-semibold text-base hover:bg-indigo-50 transition-colors"
               >
-                Get started free
+                Get started
               </button>
             </Link>
             <Link href="/">

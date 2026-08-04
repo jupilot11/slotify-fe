@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, type KeyboardEvent } from 'react'
+import { useState, useEffect } from 'react'
 import Modal from '@/components/ui/Modal'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -24,11 +24,9 @@ const EMPTY_FORM: PlanFormData = {
   currency: 'PHP',
   billing_interval: 'monthly',
   trial_period_days: null,
-  features: [],
   max_businesses: 1,
   max_users: null,
-  max_storage_gb: null,
-  api_limit: null,
+  max_services: null,
   featured_months: 0,
   sort_order: 0,
   is_active: true,
@@ -43,11 +41,9 @@ function planToForm(plan: SubscriptionPlan): PlanFormData {
     currency: plan.currency,
     billing_interval: plan.billing_interval,
     trial_period_days: plan.trial_period_days,
-    features: plan.features,
     max_businesses: plan.max_businesses,
     max_users: plan.max_users,
-    max_storage_gb: plan.max_storage_gb,
-    api_limit: plan.api_limit,
+    max_services: plan.max_services,
     featured_months: plan.featured_months,
     sort_order: plan.sort_order,
     is_active: plan.is_active,
@@ -56,13 +52,11 @@ function planToForm(plan: SubscriptionPlan): PlanFormData {
 
 export default function PricingFormModal({ isOpen, plan, isSubmitting, submitError, onClose, onSubmit }: Props) {
   const [form, setForm] = useState<PlanFormData>(plan ? planToForm(plan) : EMPTY_FORM)
-  const [featureInput, setFeatureInput] = useState('')
   const [errors, setErrors] = useState<Partial<Record<keyof PlanFormData, string>>>({})
 
   useEffect(() => {
     if (isOpen) {
       setForm(plan ? planToForm(plan) : EMPTY_FORM)
-      setFeatureInput('')
       setErrors({})
     }
   }, [isOpen, plan])
@@ -70,24 +64,6 @@ export default function PricingFormModal({ isOpen, plan, isSubmitting, submitErr
   function set<K extends keyof PlanFormData>(key: K, value: PlanFormData[K]) {
     setForm((f) => ({ ...f, [key]: value }))
     setErrors((e) => ({ ...e, [key]: undefined }))
-  }
-
-  function addFeature() {
-    const trimmed = featureInput.trim()
-    if (!trimmed || form.features.includes(trimmed)) return
-    set('features', [...form.features, trimmed])
-    setFeatureInput('')
-  }
-
-  function removeFeature(feat: string) {
-    set('features', form.features.filter((f) => f !== feat))
-  }
-
-  function handleFeatureKey(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      addFeature()
-    }
   }
 
   function validate(): boolean {
@@ -196,21 +172,12 @@ export default function PricingFormModal({ isOpen, plan, isSubmitting, submitErr
           />
 
           <Input
-            label="Max Storage (GB)"
+            label="Max Services"
             type="number"
             min={1}
-            value={form.max_storage_gb ?? ''}
-            onChange={(e) => set('max_storage_gb', e.target.value === '' ? null : parseInt(e.target.value))}
-            placeholder="Optional"
-          />
-
-          <Input
-            label="API Limit"
-            type="number"
-            min={0}
-            value={form.api_limit ?? ''}
-            onChange={(e) => set('api_limit', e.target.value === '' ? null : parseInt(e.target.value))}
-            placeholder="Optional"
+            value={form.max_services ?? ''}
+            onChange={(e) => set('max_services', e.target.value === '' ? null : parseInt(e.target.value))}
+            placeholder="Optional (unlimited if blank)"
           />
 
           <Input
@@ -239,46 +206,6 @@ export default function PricingFormModal({ isOpen, plan, isSubmitting, submitErr
             placeholder="Describe this plan…"
             className="w-full resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-slate-700">Features</label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={featureInput}
-              onChange={(e) => setFeatureInput(e.target.value)}
-              onKeyDown={handleFeatureKey}
-              placeholder="Type a feature and press Enter"
-              className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
-            <button
-              type="button"
-              onClick={addFeature}
-              className="rounded-lg bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 transition-colors"
-            >
-              Add
-            </button>
-          </div>
-          {form.features.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-1">
-              {form.features.map((feat) => (
-                <span
-                  key={feat}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700"
-                >
-                  {feat}
-                  <button
-                    type="button"
-                    onClick={() => removeFeature(feat)}
-                    className="text-indigo-400 hover:text-indigo-700 transition-colors leading-none"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-3">

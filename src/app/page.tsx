@@ -23,12 +23,6 @@ export default function ConsumerLandingPage() {
           <Logo />
           <div className="flex items-center gap-4">
             <Link
-              href="/login"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors hidden sm:block"
-            >
-              Sign in
-            </Link>
-            <Link
               href="/for-business"
               className="inline-flex items-center gap-1.5 bg-indigo-600 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-indigo-700 transition-colors"
             >
@@ -178,12 +172,6 @@ export default function ConsumerLandingPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </Link>
-            <Link
-              href="/login"
-              className="text-slate-400 text-sm hover:text-white transition-colors"
-            >
-              Sign up for free →
-            </Link>
           </div>
         </div>
       </section>
@@ -201,9 +189,6 @@ export default function ConsumerLandingPage() {
           <div className="flex items-center gap-6 text-sm">
             <Link href="/for-business" className="text-slate-400 hover:text-white transition-colors">
               For Business
-            </Link>
-            <Link href="/login" className="text-slate-400 hover:text-white transition-colors">
-              Sign in
             </Link>
           </div>
         </div>

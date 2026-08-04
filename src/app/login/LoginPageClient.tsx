@@ -15,7 +15,7 @@ export default function LoginPageClient() {
           Your session has expired. Please log in again.
         </div>
       )}
-      <AuthDialog isOpen={true} onClose={() => router.push('/')} inline />
+      <AuthDialog isOpen={true} onClose={() => router.push('/for-business')} inline />
     </>
   )
 }

@@ -88,20 +88,22 @@ export default function LoginForm() {
       <ForgotPasswordDialog isOpen={showForgotPassword} onClose={() => setShowForgotPassword(false)} />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {displayError && (
-          <div className="flex items-start gap-3 bg-red-50 border-l-4 border-red-500 px-4 py-3 rounded-r-lg">
-            <svg
-              className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-              />
-            </svg>
+          <div className="flex items-start gap-3 rounded-xl bg-red-50 border border-red-100 px-4 py-3.5">
+            <div className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-red-100 flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-red-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+                />
+              </svg>
+            </div>
             <div className="flex flex-col gap-1">
               <p className="text-sm text-red-700 leading-relaxed">{displayError.message}</p>
               {displayError.code === 'EMAIL_NOT_VERIFIED' && (
@@ -109,13 +111,13 @@ export default function LoginForm() {
                   type="button"
                   onClick={handleResend}
                   disabled={resendStatus === 'loading' || resendStatus === 'success'}
-                  className="text-sm text-red-700 underline hover:text-red-900 font-medium text-left disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+                  className="text-sm text-red-600 underline hover:text-red-800 font-medium text-left disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
                 >
                   {resendStatus === 'loading'
                     ? 'Sending…'
                     : resendStatus === 'success'
-                    ? 'Verification email sent!'
-                    : 'Resend verification link'}
+                      ? 'Verification email sent!'
+                      : 'Resend verification link'}
                 </button>
               )}
             </div>
@@ -128,6 +130,7 @@ export default function LoginForm() {
           placeholder="you@example.com"
           autoComplete="email"
           error={errors.email?.message}
+          className="shadow-sm"
           {...register('email', {
             onChange: () => {
               if (passwordRequired) {
@@ -153,6 +156,7 @@ export default function LoginForm() {
               placeholder="••••••••"
               autoComplete="current-password"
               error={errors.password?.message}
+              className="shadow-sm"
               {...register('password')}
             />
             <button
@@ -164,8 +168,8 @@ export default function LoginForm() {
               <EyeIcon open={showPassword} />
             </button>
           </div>
-
         </div>
+
         <div
           className={[
             'overflow-hidden transition-all duration-300 ease-out',
@@ -185,7 +189,7 @@ export default function LoginForm() {
             <button
               type="button"
               onClick={() => setShowForgotPassword(true)}
-              className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+              className="text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
             >
               Forgot password?
             </button>
@@ -194,7 +198,7 @@ export default function LoginForm() {
 
         <Button
           type="submit"
-          className="w-full"
+          className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-md shadow-indigo-500/20 transition-all duration-200 font-semibold"
           size="lg"
           isLoading={status === 'loading'}
           disabled={passwordRequired ? !passwordValue : !isEmailValid}

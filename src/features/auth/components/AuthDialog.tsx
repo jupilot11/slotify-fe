@@ -52,29 +52,36 @@ export default function AuthDialog({ isOpen, onClose, defaultTab = 'login', inli
   const mainContent = (
     <>
       <div className="flex items-start justify-between">
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-600">
-              <svg
-                className="w-3.5 h-3.5 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"
-                />
-              </svg>
+        <div>
+          <div className="flex items-center gap-3 mb-5">
+            <div className="relative flex-shrink-0">
+              <div className="absolute -inset-2 rounded-2xl bg-gradient-to-br from-indigo-400/20 to-violet-500/20 blur-md" />
+              <div className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/30 ring-1 ring-white/20">
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"
+                  />
+                </svg>
+              </div>
             </div>
-            <span className="text-sm font-semibold text-indigo-600 tracking-wide">Slotify</span>
+            <div>
+              <p className="text-base font-bold text-slate-800 tracking-tight leading-none">Slotify</p>
+              <p className="text-[11px] font-semibold text-indigo-500/80 tracking-widest uppercase mt-0.5">for Business</p>
+            </div>
           </div>
-          <h2 className="text-xl font-bold text-slate-900">
+
+          <h2 className="text-[26px] font-bold tracking-tight text-slate-900 leading-tight">
             {activeTab === 'login' ? 'Welcome back' : 'Create your account'}
           </h2>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-500 mt-1.5 leading-relaxed">
             {activeTab === 'login'
               ? 'Sign in to your Slotify account'
               : 'Start managing bookings and queues in minutes'}
@@ -91,7 +98,9 @@ export default function AuthDialog({ isOpen, onClose, defaultTab = 'login', inli
         </button>
       </div>
 
-      <div className="flex bg-slate-100 rounded-xl p-1 mt-5 mb-6">
+      <div className="my-6 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+
+      {/* <div className="flex bg-slate-100 rounded-xl p-1 mt-5 mb-6">
         <button
           type="button"
           onClick={() => setActiveTab('login')}
@@ -116,12 +125,12 @@ export default function AuthDialog({ isOpen, onClose, defaultTab = 'login', inli
         >
           Register
         </button>
-      </div>
+      </div> */}
 
       {activeTab === 'login' ? (
-        <>
+        <div>
           <LoginForm />
-          <p className="text-center text-sm text-slate-400 mt-5">
+          {/* <p className="text-center text-sm text-slate-400 mt-5">
             Don&apos;t have an account?{' '}
             <button
               type="button"
@@ -130,8 +139,8 @@ export default function AuthDialog({ isOpen, onClose, defaultTab = 'login', inli
             >
               Register
             </button>
-          </p>
-        </>
+          </p> */}
+        </div>
       ) : (
         <RegisterForm
           onSwitchToLogin={() => setActiveTab('login')}
