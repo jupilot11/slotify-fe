@@ -1,14 +1,25 @@
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed'
 
+export type BillingInterval = 'monthly' | 'yearly' | 'lifetime'
+
 export interface SubscriptionPlan {
   id: string
-  name: 'basic' | 'standard' | 'pro'
+  name: string
   display_name: string
-  price_php: number
-  max_businesses: number
-  featured_months: number
   description: string | null
+  price_php: number
+  currency: string
+  billing_interval: BillingInterval
+  trial_period_days: number | null
+  features: string[]
+  max_businesses: number
+  max_users: number | null
+  max_storage_gb: number | null
+  api_limit: number | null
+  featured_months: number
   sort_order: number
+  is_active: boolean
+  created_at: string
 }
 export type ServiceStatus = 'active' | 'inactive'
 export type BusinessCategory = 'barbershop' | 'clinic' | 'salon' | 'other'
